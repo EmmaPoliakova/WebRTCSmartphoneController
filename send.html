@@ -7,7 +7,7 @@
         <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-        <title>Peer-to-Peer Cue System --- Sender</title>
+        
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
@@ -34,19 +34,14 @@
                 <td><div id="status" class="status"></div></td>
                 <td><div class="message" id="message"></div></td>
             </tr>
-            <td>
-                <button type="button" class="control-button" id="goButton">Go</button>
-            </td>
-            <td>
-                <button type="button" class="control-button" id="offButton">Off</button>
-            </td>
-
+            
 
         </table>
 
          <div class="container">
+             <canvas class="output_canvas" width="480px" height="800px"></canvas>
              <video class="input_video"></video>
-             <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+             
          </div>
 
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
@@ -67,13 +62,12 @@
                 var clearMsgsButton = document.getElementById("clearMsgsButton");
                 var connectButton = document.getElementById("connect-button");
                 var cueString = "<span class=\"cueMsg\">Cue: </span>";
-                var goButton = document.getElementById("goButton");
-                var offButton = document.getElementById("offButton");
-                var sending;
 
                 const videoElement = document.getElementsByClassName('input_video')[0];
                 const canvasElement = document.getElementsByClassName('output_canvas')[0];
                 const canvasCtx = canvasElement.getContext('2d');
+
+                document.getElementsByClassName('input_video')[0].style.visibility = 'hidden';
 
                 function onResults(results) {
                   canvasCtx.save();
@@ -234,17 +228,7 @@
                         console.log('Connection is closed');
                     }
                 }
-
-                goButton.addEventListener('click', function () {
-                    sending = setInterval(function() {signal("Go");}, 100, );
-                });
-
-                offButton.addEventListener('click', function () {
-                    clearInterval(sending);
-                    signal("Off");
-                });
-
-
+               
                 function addMessage(msg) {
                     var now = new Date();
                     var h = now.getHours();

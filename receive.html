@@ -3,7 +3,6 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width">
-        <title>Peer-to-Peer Cue System --- Reciever</title>
         <link rel="stylesheet" href="style.css">
 
     </head>
@@ -28,8 +27,6 @@
                 <td><div class="message" id="message"></div></td>
             </tr>
 
-            <td class="display-box hidden" id="go"><h2>Go</h2></td>
-            <td class="display-box hidden" id="off"><h2>All Off</h2></td>
         </table>
 
         <canvas id="myCanvas" width="1280px" height="720px"  style="border:1px solid #000000;"></canvas>
@@ -48,8 +45,7 @@
                 var sendMessageBox = document.getElementById("sendMessageBox");
                 var sendButton = document.getElementById("sendButton");
                 var clearMsgsButton = document.getElementById("clearMsgsButton");
-                var goBox = document.getElementById("go");
-                var offBox = document.getElementById("off");
+                
 
                 var canvas=document.getElementById("myCanvas"),
                 ctx = canvas.getContext("2d");
@@ -80,7 +76,7 @@
                         ctx.arc(x,y,20,0,Math.PI*2);
                         ctx.fill();
 
-                    setTimeout(update,10);
+                    setTimeout(update,20);
                 }
 
                 update();
@@ -157,14 +153,6 @@
                         console.log("Data recieved");
                         var cueString = "<span class=\"cueMsg\">Cue: </span>";
                         switch (data) {
-                            case 'Go':
-                                go();
-                                addMessage(cueString + data);
-                                break;
-                            case 'Off':
-                                off();
-                                addMessage(cueString + data);
-                                break;
                             default:
                                 addMessage(data);
                                 break;
@@ -176,17 +164,7 @@
                     });
                 }
 
-                function go() {
-                    goBox.className = "display-box go";
-                    offBox.className = "display-box hidden";
-                    return;
-                };
-
-                function off() {
-                    goBox.className = "display-box hidden";
-                    offBox.className = "display-box off";
-                    return;
-                }
+                
                 function addMessage(msg) {
                     var now = new Date();
                     var h = now.getHours();
