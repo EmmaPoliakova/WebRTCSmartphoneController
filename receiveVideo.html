@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width">
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+        <title>Peer-to-Peer Cue System --- Reciever</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <table class="display">
+            <tr>
+                <td class="title">Status:</td>
+                <td class="title">Messages:</td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="receiver-id" style="font-weight: bold;" title="Copy this ID to the input on send.html.">ID:</div>
+                </td>
+                <td>
+                    <input type="text" id="sendMessageBox" placeholder="Enter a message..." autofocus="true" />
+                    <button type="button" id="sendButton">Send</button>
+                    <button type="button" id="clearMsgsButton">Clear Msgs (Local)</button>
+                </td>
+            </tr>
+            <tr>
+                <td><div id="status" class="status"></div></td>
+                <td><div class="message" id="message"></div></td>
+            </tr>
+            <tr>
+                <td class="display-box standby" id="standby"><h2>Standby</h2></td>
+                <td class="display-box hidden" id="go"><h2>Go</h2></td>
+            </tr>
+            <tr>
+                <td class="display-box hidden" id="fade"><h2>Fade</h2></td>
+                <td class="display-box hidden" id="off"><h2>All Off</h2></td>
+            </tr>
+        </table>
+
+        
+        <div class="container">
+            <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+            <video class="output_video" width="1280px" height="720px"></video>
+            
+        </div>
+
+        <canvas id="picture_canvas" width="1280px" height="720px"></canvas>
+
+
+
+
+        <video id="remote-video"></video>
+
+        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+        <script type="text/javascript">
+            (function () {
+
+                var lastPeerId = null;
+                var peer = null; // Own peer object
+                var peerId = null;
+                var conn = null;
+                var recvId = document.getElementById("receiver-id");
+                var status = document.getElementById("status");
+                var message = document.getElementById("message");
+                var standbyBox = document.getElementById("standby");
+                var goBox = document.getElementById("go");
+                var fadeBox = document.getElementById("fade");
+                var offBox = document.getElementById("off");
+                var sendMessageBox = document.getElementById("sendMessageBox");
+                var sendButton = document.getElementById("sendButton");
+                var clearMsgsButton = document.getElementById("clearMsgsButton");
+
+                
+                const videoElement = document.getElementsByClassName('output_video')[0];
+                const canvasElement = document.getElementsByClassName('output_canvas')[0];
+                const canvasCtx = canvasElement.getContext('2d');
+
+
+                /**
+                 * Create the Peer object for our end of the connection.
+                 *
+                 * Sets up callbacks that handle any events related to our
+                 * peer object.
+                 */
+                 function initialize() {
+                    // Create own peer object with connection to shared PeerJS server
+                    peer = new Peer(null, {
+                        debug: 2
+                    });
+
+                    peer.on('open', function (id) {
+                        // Workaround for peer.reconnect deleting previous id
+                        if (peer.id === null) {
+                            console.log('Received null id from peer open');
+                            peer.id = lastPeerId;
+                        } else {
+                            lastPeerId = peer.id;
+                        }
+
+                        console.log('ID: ' + peer.id);
+                        recvId.innerHTML = "ID: " + peer.id;
+                        status.innerHTML = "Awaiting connection...";
+                    });
+                    peer.on('connection', function (c) {
+                        // Allow only a single connection
+                        if (conn && conn.open) {
+                            c.on('open', function() {
+                                c.send("Already connected to another client");
+                                setTimeout(function() { c.close(); }, 500);
+                            });
+                            return;
+                        }
+
+                        conn = c;
+                        console.log("Connected to: " + conn.peer);
+                        status.innerHTML = "Connected";
+                        ready();
+
+                        var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+                        peer.on('call', function(call) {
+                        getUserMedia({video: true, audio: false}, function(stream) {
+                            call.answer(stream); // Answer the call with an A/V stream.
+                            call.on('stream', function(remoteStream) {
+                                console.log("video");
+                                setRemoteStream(remoteStream)
+
+                            // Show stream in some video/canvas element.
+                            });
+                        }, function(err) {
+                            console.log('Failed to get local stream' ,err);
+                        });
+                });
+                    });
+                    peer.on('disconnected', function () {
+                        status.innerHTML = "Connection lost. Please reconnect";
+                        console.log('Connection lost. Please reconnect');
+
+                        // Workaround for peer.reconnect deleting previous id
+                        peer.id = lastPeerId;
+                        peer._lastServerId = lastPeerId;
+                        peer.reconnect();
+                    });
+                    peer.on('close', function() {
+                        conn = null;
+                        status.innerHTML = "Connection destroyed. Please refresh";
+                        console.log('Connection destroyed');
+                    });
+                    peer.on('error', function (err) {
+                        console.log(err);
+                        alert('' + err);
+                    });
+                };
+
+
+                function setRemoteStream(stream){
+   
+                    
+                    var video = videoElement;
+                    video.srcObject = stream;
+                    video.play();
+
+                    makeFrames(videoElement);                    
+
+                    }
+
+                    const hands = new Hands({locateFile: (file) => {
+                        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                        }});
+                        hands.setOptions({
+                        maxNumHands: 1,
+                        minDetectionConfidence: 0.5,
+                        minTrackingConfidence: 0.5
+                        });
+
+                    hands.onResults(onResults);
+
+                    var video1,c1,ctx1,c_tmp,ctx_tmp,frame; 
+
+                    function makeFrames(video) {
+                        video1 = video;
+                        c1 = document.getElementById('picture_canvas');
+                        ctx1 = c1.getContext('2d');
+                        c_tmp = document.createElement('canvas');
+                        c_tmp.setAttribute('width', 1280);
+                        c_tmp.setAttribute('height', 720);
+                        ctx_tmp = c_tmp.getContext('2d');
+                        video.addEventListener('play', computeFrame);
+                    }
+
+                    function computeFrame() {
+                        ctx_tmp.drawImage(video1, 0, 0, 1280, 720);
+                        //hands.send({image: c_tmp});
+                        frame = ctx_tmp.getImageData(0, 0, 1280, 720);
+                        ctx1.putImageData(frame, 0, 0);
+                        passFrame();
+                        setTimeout(computeFrame, 100);
+                        }
+
+                async function passFrame(){
+                    return (await hands.send({'image': frame}));
+                }
+
+
+                function onResults(results) {
+                    console.log("here");
+                  canvasCtx.save();
+                  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                  canvasCtx.drawImage(
+                      results.image, 0, 0, canvasElement.width, canvasElement.height);
+                  if (results.multiHandLandmarks) {
+                    for (const landmarks of results.multiHandLandmarks) {
+                      drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
+                                     {color: '#00FF00', lineWidth: 5});
+                      drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
+                      console.log('here');                        
+                        }
+                  }
+                  canvasCtx.restore();
+                }
+
+                
+            
+
+                /**
+                 * Triggered once a connection has been achieved.
+                 * Defines callbacks to handle incoming data and connection events.
+                 */
+                function ready() {
+                    conn.on('data', function (data) {
+                        console.log("Data recieved");
+                        var cueString = "<span class=\"cueMsg\">Cue: </span>";
+                        switch (data) {
+                            case 'Go':
+                                go();
+                                addMessage(cueString + data);
+                                break;
+                            case 'Fade':
+                                fade();
+                                addMessage(cueString + data);
+                                break;
+                            case 'Off':
+                                off();
+                                addMessage(cueString + data);
+                                break;
+                            case 'Reset':
+                                reset();
+                                addMessage(cueString + data);
+                                break;
+                            default:
+                                addMessage("<span class=\"peerMsg\">Peer: </span>" + data);
+                                break;
+                        };
+                    });
+                    conn.on('close', function () {
+                        status.innerHTML = "Connection reset<br>Awaiting connection...";
+                        conn = null;
+                    });
+                }
+
+                function go() {
+                    standbyBox.className = "display-box hidden";
+                    goBox.className = "display-box go";
+                    fadeBox.className = "display-box hidden";
+                    offBox.className = "display-box hidden";
+                    return;
+                };
+
+                function fade() {
+                    standbyBox.className = "display-box hidden";
+                    goBox.className = "display-box hidden";
+                    fadeBox.className = "display-box fade";
+                    offBox.className = "display-box hidden";
+                    return;
+                };
+
+                function off() {
+                    standbyBox.className = "display-box hidden";
+                    goBox.className = "display-box hidden";
+                    fadeBox.className = "display-box hidden";
+                    offBox.className = "display-box off";
+                    return;
+                }
+
+                function reset() {
+                    standbyBox.className = "display-box standby";
+                    goBox.className = "display-box hidden";
+                    fadeBox.className = "display-box hidden";
+                    offBox.className = "display-box hidden";
+                    return;
+                };
+
+                function addMessage(msg) {
+                    var now = new Date();
+                    var h = now.getHours();
+                    var m = addZero(now.getMinutes());
+                    var s = addZero(now.getSeconds());
+
+                    if (h > 12)
+                        h -= 12;
+                    else if (h === 0)
+                        h = 12;
+
+                    function addZero(t) {
+                        if (t < 10)
+                            t = "0" + t;
+                        return t;
+                    };
+
+                    message.innerHTML = "<br><span class=\"msg-time\">" + h + ":" + m + ":" + s + "</span>  -  " + msg + message.innerHTML;
+                }
+
+                function clearMessages() {
+                    message.innerHTML = "";
+                    addMessage("Msgs cleared");
+                }
+
+                // Listen for enter in message box
+                sendMessageBox.addEventListener('keypress', function (e) {
+                    var event = e || window.event;
+                    var char = event.which || event.keyCode;
+                    if (char == '13')
+                        sendButton.click();
+                });
+                // Send message
+                sendButton.addEventListener('click', function () {
+                    if (conn && conn.open) {
+                        var msg = sendMessageBox.value;
+                        sendMessageBox.value = "";
+                        conn.send(msg);
+                        console.log("Sent: " + msg)
+                        addMessage("<span class=\"selfMsg\">Self: </span>" + msg);
+                    } else {
+                        console.log('Connection is closed');
+                    }
+                });
+
+                // Clear messages box
+                clearMsgsButton.addEventListener('click', clearMessages);
+
+                initialize();
+            })();
+        </script>
+    </body>
+</html>
