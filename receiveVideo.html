@@ -43,11 +43,11 @@
         
         <div class="container">
             <canvas class="output_canvas" width="640px" height="1136px"></canvas>
-            <video class="output_video" width="1280px" height="720px"></video>
+            <video class="output_video" width="640px" height="1136px"></video>
             
         </div>
 
-        <canvas id="picture_canvas" width="1280px" height="720px"></canvas>
+        <canvas id="picture_canvas" width="640px" height="1136px"></canvas>
 
 
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
@@ -178,19 +178,19 @@
                         c1 = document.getElementById('picture_canvas');
                         ctx1 = c1.getContext('2d');
                         c_tmp = document.createElement('canvas');
-                        c_tmp.setAttribute('width', 1280);
-                        c_tmp.setAttribute('height', 720);
+                        c_tmp.setAttribute('width', 640);
+                        c_tmp.setAttribute('height', 1136);
                         ctx_tmp = c_tmp.getContext('2d');
                         video.addEventListener('play', computeFrame);
                     }
 
                     function computeFrame() {
-                        ctx_tmp.drawImage(video1, 0, 0, 1280, 720);
+                        ctx_tmp.drawImage(video1, 0, 0, 640, 1136);
                         //hands.send({image: c_tmp});
-                        frame = ctx_tmp.getImageData(0, 0, 1280, 720);
+                        frame = ctx_tmp.getImageData(0, 0, 640, 1136);
                         ctx1.putImageData(frame, 0, 0);
                         passFrame();
-                        setTimeout(computeFrame, 200);
+                        setTimeout(computeFrame, 500);
                         }
 
                 async function passFrame(){
