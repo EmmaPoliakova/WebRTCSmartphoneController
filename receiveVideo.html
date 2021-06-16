@@ -42,17 +42,13 @@
 
         
         <div class="container">
-            <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+            <canvas class="output_canvas" width="640px" height="1136px"></canvas>
             <video class="output_video" width="1280px" height="720px"></video>
             
         </div>
 
         <canvas id="picture_canvas" width="1280px" height="720px"></canvas>
 
-
-
-
-        <video id="remote-video"></video>
 
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
         <script type="text/javascript">
@@ -77,6 +73,8 @@
                 const videoElement = document.getElementsByClassName('output_video')[0];
                 const canvasElement = document.getElementsByClassName('output_canvas')[0];
                 const canvasCtx = canvasElement.getContext('2d');
+
+                
 
 
                 /**
@@ -123,11 +121,8 @@
                         peer.on('call', function(call) {
                         getUserMedia({video: true, audio: false}, function(stream) {
                             call.answer(stream); // Answer the call with an A/V stream.
-                            call.on('stream', function(remoteStream) {
-                                console.log("video");
+                            call.on('stream', function(remoteStream) {                                
                                 setRemoteStream(remoteStream)
-
-                            // Show stream in some video/canvas element.
                             });
                         }, function(err) {
                             console.log('Failed to get local stream' ,err);
@@ -156,8 +151,7 @@
 
 
                 function setRemoteStream(stream){
-   
-                    
+
                     var video = videoElement;
                     video.srcObject = stream;
                     video.play();
@@ -196,7 +190,7 @@
                         frame = ctx_tmp.getImageData(0, 0, 1280, 720);
                         ctx1.putImageData(frame, 0, 0);
                         passFrame();
-                        setTimeout(computeFrame, 1000);
+                        setTimeout(computeFrame, 200);
                         }
 
                 async function passFrame(){
