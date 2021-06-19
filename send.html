@@ -70,18 +70,29 @@
                 document.getElementsByClassName('input_video')[0].style.visibility = 'hidden';
 
                 function onResults(results) {
+
                   canvasCtx.save();
                   canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
                   canvasCtx.drawImage(
                       results.image, 0, 0, canvasElement.width, canvasElement.height);
                   if (results.multiHandLandmarks) {
+
                     for (const landmarks of results.multiHandLandmarks) {
                       drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
                                      {color: '#00FF00', lineWidth: 5});
                       drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
+                    
+                    }
+                    //setInterval(function(){passCoordinates(landmarks);}, 500); 
+                    console.log(results.multiHandLandmarks)
+                    passCoordinates(results.multiHandLandmarks[0]);
+                    
+                  }
+                  canvasCtx.restore();
+                }
 
-                        
-                      if (conn && conn.open) {
+                function passCoordinates(landmarks){
+                    if (conn && conn.open) {
                             var msg = landmarks[8].x.toString()+ " " + landmarks[8].y.toString()+ " " + landmarks[8].z.toString() ;
                             conn.send(msg);
                             console.log("Sent: " + msg);
@@ -89,11 +100,7 @@
                         } else {
                             console.log('Connection is closed');
                         }
-                    }
-                  }
-                  canvasCtx.restore();
                 }
-
                 const hands = new Hands({locateFile: (file) => {
                   return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
                 }});
@@ -112,7 +119,7 @@
                   height: 720
                 });
                 camera.start();
-
+                
                 /**
                  * Create the Peer object for our end of the connection.
                  *

@@ -41,15 +41,12 @@
 
         
         <div class="container">
-            <canvas class="output_canvas" width="750px" height="1334px"></canvas>
+            <canvas class="output_canvas" width="1280px" height="720px"></canvas>
             <video class="output_video" width="1280px" height="720px"></video>
             
         </div>
 
         <canvas id="picture_canvas" width="1280px" height="720px"></canvas>
-
-
-
 
         <video id="remote-video"></video>
 
@@ -77,8 +74,8 @@
                 const canvasElement = document.getElementsByClassName('output_canvas')[0];
                 const canvasCtx = canvasElement.getContext('2d');
 
-                var widthV = 750;
-                var heightV = 1334;
+                var widthV = 1280;
+                var heightV = 720;
 
 
                 /**
@@ -159,7 +156,6 @@
 
                 function setRemoteStream(stream){
    
-                    
                     var video = videoElement;
                     video.srcObject = stream;
                     video.play();
@@ -197,11 +193,11 @@
                         frame = ctx_tmp.getImageData(0, 0, widthV, heightV);
                         ctx1.putImageData(frame, 0, 0);
                         trackHands();
-                        setTimeout(computeFrame, 200);
+                        setTimeout(computeFrame, 500);
                         }
 
                     async function trackHands(){
-                        return await (hands.send({'image': frame}));
+                        await hands.send({'image': frame});
                     }
 
 
