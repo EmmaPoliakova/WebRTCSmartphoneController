@@ -39,7 +39,7 @@
         </table>
 
          <div class="container">
-             <canvas class="output_canvas" width="750px" height="1334px"></canvas>
+             <canvas class="output_canvas" width="1080px" height="1920px"></canvas>
              <video class="input_video"></video>
              
          </div>
@@ -85,7 +85,7 @@
                     
                     }
                     counter = counter + 1;
-                    if (counter>25){
+                    if (counter>10){
                         passCoordinates(results.multiHandLandmarks[0]);
                         counter = 0;
                     }
@@ -119,8 +119,8 @@
                   onFrame: async () => {
                     await hands.send({image: videoElement});
                   },
-                  width: 750,
-                  height: 1334
+                  width: 1080,
+                  height: 1920
                 });
                 camera.start();
                 
