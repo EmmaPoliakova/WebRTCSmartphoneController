@@ -77,6 +77,9 @@
                 const canvasElement = document.getElementsByClassName('output_canvas')[0];
                 const canvasCtx = canvasElement.getContext('2d');
 
+                var widthV = 750;
+                var heightV = 1334;
+
 
                 /**
                  * Create the Peer object for our end of the connection.
@@ -183,19 +186,19 @@
                         c1 = document.getElementById('picture_canvas');
                         ctx1 = c1.getContext('2d');
                         c_tmp = document.createElement('canvas');
-                        c_tmp.setAttribute('width', 1280);
-                        c_tmp.setAttribute('height', 720);
+                        c_tmp.setAttribute('width', widthV);
+                        c_tmp.setAttribute('height', heightV);
                         ctx_tmp = c_tmp.getContext('2d');
                         video.addEventListener('play', computeFrame);
                     }
 
                     function computeFrame() {
-                        ctx_tmp.drawImage(video1, 0, 0, 1280, 720);
+                        ctx_tmp.drawImage(video1, 0, 0, widthV, heightV);
                         //hands.send({image: c_tmp});
-                        frame = ctx_tmp.getImageData(0, 0, 1280, 720);
+                        frame = ctx_tmp.getImageData(0, 0, widthV, heightV);
                         ctx1.putImageData(frame, 0, 0);
                         passFrame();
-                        setTimeout(computeFrame, 1000);
+                        setTimeout(computeFrame, 200);
                         }
 
                 async function passFrame(){
