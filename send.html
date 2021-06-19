@@ -66,6 +66,7 @@
                 const videoElement = document.getElementsByClassName('input_video')[0];
                 const canvasElement = document.getElementsByClassName('output_canvas')[0];
                 const canvasCtx = canvasElement.getContext('2d');
+                var counter = 0;
 
                 document.getElementsByClassName('input_video')[0].style.visibility = 'hidden';
 
@@ -83,8 +84,13 @@
                       drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
                     
                     }
-                    //setInterval(function(){passCoordinates(landmarks);}, 500); 
-                    passCoordinates(results.multiHandLandmarks[0]);
+                    counter = counter + 1;
+                    if (counter>25){
+                        passCoordinates(results.multiHandLandmarks[0]);
+                        counter = 0;
+                    }
+                    //setInterval(function(){passCoordinates(results.multiHandLandmarks[0]);}, 100); 
+                    //
                     
                   }
                   canvasCtx.restore();
@@ -92,7 +98,7 @@
 
                 function passCoordinates(landmarks){
                     if (conn && conn.open) {
-                            var msg = landmarks[8].x.toString()+ " " + landmarks[8].y.toString()+ " " + landmarks[8].z.toString() ;
+                            var msg = landmarks[8]; 
                             conn.send(msg);
                         } else {
                             console.log('Connection is closed');
@@ -108,6 +114,7 @@
                 });
                 hands.onResults(onResults);
 
+            
                 const camera = new Camera(videoElement, {
                   onFrame: async () => {
                     await hands.send({image: videoElement});
