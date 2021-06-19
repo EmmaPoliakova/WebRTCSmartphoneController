@@ -39,7 +39,7 @@
         </table>
 
          <div class="container">
-             <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+             <canvas class="output_canvas" width="750px" height="1334px"></canvas>
              <video class="input_video"></video>
              
          </div>
@@ -84,7 +84,6 @@
                     
                     }
                     //setInterval(function(){passCoordinates(landmarks);}, 500); 
-                    console.log(results.multiHandLandmarks)
                     passCoordinates(results.multiHandLandmarks[0]);
                     
                   }
@@ -95,8 +94,6 @@
                     if (conn && conn.open) {
                             var msg = landmarks[8].x.toString()+ " " + landmarks[8].y.toString()+ " " + landmarks[8].z.toString() ;
                             conn.send(msg);
-                            console.log("Sent: " + msg);
-                            addMessage(msg);
                         } else {
                             console.log('Connection is closed');
                         }
@@ -115,8 +112,8 @@
                   onFrame: async () => {
                     await hands.send({image: videoElement});
                   },
-                  width: 1280,
-                  height: 720
+                  width: 750,
+                  height: 1334
                 });
                 camera.start();
                 
