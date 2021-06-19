@@ -145,6 +145,7 @@
                         var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
                         getUserMedia({video: true, audio: false}, function(stream) {
                         var call = peer.call(conn.peer, stream);
+                        document.getElementsByClassName('input_video')[0].srcObject = stream;
                         call.on('stream', function(remoteStream) {
                             // Show stream in some video/canvas element.
                         });
