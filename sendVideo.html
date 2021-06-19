@@ -46,11 +46,7 @@
                 </td>
             </tr>
         </table>
-
-        <div class="container">
-            <canvas class="output_canvas" width="1280px" height="720px"></canvas>
-            <video class="input_video"></video>
-        </div>
+        <video id="input_video"></video>
 
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
         <script type="text/javascript">
@@ -145,8 +141,9 @@
                         var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
                         getUserMedia({video: true, audio: false}, function(stream) {
                         var call = peer.call(conn.peer, stream);
-                        var video = document.getElementsByClassName('input_video')[0];
+                        var video = document.getElementById('input_video');
                         video.srcObject = stream;
+                        video.play();
                         call.on('stream', function(remoteStream) {
                             // Show stream in some video/canvas element.
                         });

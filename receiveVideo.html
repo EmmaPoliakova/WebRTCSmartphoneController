@@ -123,7 +123,7 @@
 
                         var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
                         peer.on('call', function(call) {
-                        getUserMedia({video: true, audio: false}, function(stream) {
+                        getUserMedia({video: false, audio: true}, function(stream) {
                             call.answer(stream); // Answer the call with an A/V stream.
                             call.on('stream', function(remoteStream) {
                                 console.log("video");
@@ -194,16 +194,15 @@
 
                     function computeFrame() {
                         ctx_tmp.drawImage(video1, 0, 0, widthV, heightV);
-                        //hands.send({image: c_tmp});
                         frame = ctx_tmp.getImageData(0, 0, widthV, heightV);
                         ctx1.putImageData(frame, 0, 0);
-                        passFrame();
-                        setTimeout(computeFrame, 250);
+                        trackHands();
+                        setTimeout(computeFrame, 200);
                         }
 
-                async function passFrame(){
-                    return (await hands.send({'image': frame}));
-                }
+                    async function trackHands(){
+                        return await (hands.send({'image': frame}));
+                    }
 
 
                 function onResults(results) {
