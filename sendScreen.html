@@ -47,40 +47,7 @@
 
         <script type="text/javascript">         
                 
-            var canvasElement = document.getElementsByClassName('input_canvas')[0];
-            canvasElement.setAttribute('width', window.innerWidth);
-            canvasElement.setAttribute('height', window.innerHeight);
-            var canvasCtx = canvasElement.getContext('2d');
-
-            function startup() {
-                canvasElement.addEventListener("touchstart", handleStart, false);
-                //canvasElement.addEventListener("touchend", handleEnd, false);
-                //canvasElement.addEventListener("touchcancel", handleCancel, false);
-                //canvasElement.addEventListener("touchmove", handleMove, false);
-            }
-
-            document.addEventListener("DOMContentLoaded", startup);
-
-            function handleStart(evt) {
-                evt.preventDefault();
-                console.log("touchstart.");
-                var touches = evt.changedTouches;
-
-                for (var i = 0; i < touches.length; i++) {
-                    console.log("touchstart:" + i + "...");
-                    passCoordinates(touches[i]);  
-                    }
-                }
-
-                function passCoordinates(coords){
-                    if (conn && conn.open) {
-                            var msg = coords; 
-                            conn.send(msg);
-                        } else {
-                            console.log('Connection is closed');
-                        }
-                }
-
+           
 
             
             (function () {
@@ -98,8 +65,108 @@
                 var cueString = "<span class=\"cueMsg\">Cue: </span>";
 
 
+            var ongoingTouches = [];
+            var canvasElement = document.getElementsByClassName('input_canvas')[0];
+            canvasElement.setAttribute('width', window.innerWidth);
+            canvasElement.setAttribute('height', window.innerHeight);
+            var canvasCtx = canvasElement.getContext('2d');
 
-               
+            function startup() {
+                canvasElement.addEventListener("touchstart", handleStart, false);
+                canvasElement.addEventListener("touchend", handleEnd, false);
+                canvasElement.addEventListener("touchcancel", handleCancel, false);
+                canvasElement.addEventListener("touchmove", handleMove, false);
+            }
+
+            document.addEventListener("DOMContentLoaded", startup);
+
+            function copyTouch({ identifier, pageX, pageY }) {
+                return { identifier, pageX, pageY };
+            }
+
+            function ongoingTouchIndexById(idToFind) {
+            for (var i = 0; i < ongoingTouches.length; i++) {
+                var id = ongoingTouches[i].identifier;
+
+                if (id == idToFind) {
+                return i;
+                }
+            }
+            return -1;    // not found
+            }
+
+
+            function handleStart(evt) {
+                evt.preventDefault();
+                console.log("touchstart.");
+                var touches = evt.changedTouches;
+
+                for (var i = 0; i < touches.length; i++) {
+                    console.log("touchstart:" + i + "...");
+                    ongoingTouches.push(copyTouch(touches[i]));
+                    //console.log(touches[i].pageX, touches[i].pageY)
+                    passCoordinates(touches[i]); 
+
+                    }
+                }
+                function handleMove(evt) {
+                    evt.preventDefault();
+                    var touches = evt.changedTouches;
+
+                    for (var i = 0; i < touches.length; i++) {
+                        var idx = ongoingTouchIndexById(touches[i].identifier);
+
+                        if (idx >= 0) {
+                            console.log("continuing touch "+idx);
+                            console.log("ctx.moveTo(" + ongoingTouches[idx].pageX + ", " + ongoingTouches[idx].pageY + ");");
+                            passCoordinates(ongoingTouches[idx]); 
+                            ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
+                        } else {
+                            console.log("can't figure out which touch to continue");
+                            }
+                        }
+                    }
+
+                    function handleEnd(evt) {
+                        evt.preventDefault();
+                        //log("touchend");
+                        var touches = evt.changedTouches;
+
+                        for (var i = 0; i < touches.length; i++) {
+                            var idx = ongoingTouchIndexById(touches[i].identifier);
+
+                            if (idx >= 0) {
+                            ongoingTouches.splice(idx, 1);  // remove it; we're done
+                            } else {
+                            console.log("can't figure out which touch to end");
+                            }
+                        }
+                        }
+
+
+                    function handleCancel(evt) {
+                        evt.preventDefault();
+                        console.log("touchcancel.");
+                        var touches = evt.changedTouches;
+
+                        for (var i = 0; i < touches.length; i++) {
+                            var idx = ongoingTouchIndexById(touches[i].identifier);
+                            ongoingTouches.splice(idx, 1);  // remove it; we're done
+                        }
+                        }
+
+
+
+
+                function passCoordinates(coords){
+                    if (conn && conn.open) {
+                            var msg = [coords.pageX, coords.pageY]; 
+                            console.log(msg);
+                            conn.send(msg);
+                        } else {
+                            console.log('Connection is closed');
+                        }
+                }
 
 
                 
