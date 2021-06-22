@@ -160,7 +160,7 @@
 
                 function passCoordinates(coords){
                     if (conn && conn.open) {
-                            var msg = [coords.pageX, coords.pageY]; 
+                            var msg = [coords.pageX*(1280/window.innerWidth), coords.pageY*(720/window.innerHeight)]; 
                             console.log(msg);
                             conn.send(msg);
                         } else {

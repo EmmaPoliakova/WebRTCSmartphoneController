@@ -39,7 +39,7 @@
         </table>
 
          <div class="container">
-             <canvas class="output_canvas" width="1080px" height="1920px"></canvas>
+             <canvas class="output_canvas"></canvas>
              <video class="input_video"></video>
              
          </div>
@@ -65,6 +65,8 @@
 
                 const videoElement = document.getElementsByClassName('input_video')[0];
                 const canvasElement = document.getElementsByClassName('output_canvas')[0];
+                canvasElement.setAttribute('width', window.innerWidth);
+                canvasElement.setAttribute('height', window.innerHeight);
                 const canvasCtx = canvasElement.getContext('2d');
                 var counter = 0;
 
