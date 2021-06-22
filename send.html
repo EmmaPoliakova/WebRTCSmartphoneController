@@ -16,18 +16,12 @@
         <table class="control">
             <tr>
                 <td class="title">Status:</td>
-                <td class="title">Messages:</td>
             </tr>
             <tr>
                 <td>
                     <span style="font-weight: bold">ID: </span>
                     <input type="text" id="receiver-id" title="Input the ID from receive.html">
                     <button id="connect-button">Connect</button>
-                </td>
-                <td>
-                    <input type="text" id="sendMessageBox" placeholder="Enter a message..." autofocus="true" />
-                    <button type="button" id="sendButton">Send</button>
-                    <button type="button" id="clearMsgsButton">Clear Msgs (Local)</button>
                 </td>
             </tr>
             <tr>
@@ -57,11 +51,8 @@
                 var recvIdInput = document.getElementById("receiver-id");
                 var status = document.getElementById("status");
                 var message = document.getElementById("message");
-                var sendMessageBox = document.getElementById("sendMessageBox");
-                var sendButton = document.getElementById("sendButton");
-                var clearMsgsButton = document.getElementById("clearMsgsButton");
                 var connectButton = document.getElementById("connect-button");
-                var cueString = "<span class=\"cueMsg\">Cue: </span>";
+  
 
                 const videoElement = document.getElementsByClassName('input_video')[0];
                 const canvasElement = document.getElementsByClassName('output_canvas')[0];
@@ -87,7 +78,7 @@
                     
                     }
                     counter = counter + 1;
-                    if (counter>3){
+                    if (counter>1){
                         passCoordinates(results.multiHandLandmarks[0]);
                         counter = 0;
                     }
@@ -204,7 +195,7 @@
                     });
                     // Handle incoming data (messages only since this is the signal sender)
                     conn.on('data', function (data) {
-                        addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+                        addMessage(data);
                     });
                     conn.on('close', function () {
                         status.innerHTML = "Connection closed";
@@ -262,34 +253,9 @@
                     message.innerHTML = "<br><span class=\"msg-time\">" + h + ":" + m + ":" + s + "</span>  -  " + msg + message.innerHTML;
                 };
 
-                function clearMessages() {
-                    message.innerHTML = "";
-                    addMessage("Msgs cleared");
-                };
+               
 
-                // Listen for enter in message box
-                sendMessageBox.addEventListener('keypress', function (e) {
-                    var event = e || window.event;
-                    var char = event.which || event.keyCode;
-                    if (char == '13')
-                        sendButton.click();
-                });
-                // Send message
-                sendButton.addEventListener('click', function () {
-                    if (conn && conn.open) {
-                        var msg = sendMessageBox.value;
-                        sendMessageBox.value = "";
-                        conn.send(msg);
-                        console.log("Sent: " + msg);
-                        addMessage("<span class=\"selfMsg\">Self: </span> " + msg);
-                    } else {
-                        console.log('Connection is closed');
-                    }
-                });
-
-                // Clear messages box
-                clearMsgsButton.addEventListener('click', clearMessages);
-                // Start peer connection on click
+               // Start peer connection on click
                 connectButton.addEventListener('click', join);
 
                 // Since all our callbacks are setup, start the process of obtaining an ID

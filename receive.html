@@ -10,19 +10,11 @@
         <table class="display">
             <tr>
                 <td class="title">Status:</td>
-                <td class="title">Messages:</td>
             </tr>
-            <tr>
                 <td>
                     <div id="receiver-id" style="font-weight: bold;" title="Copy this ID to the input on send.html.">ID:</div>
                 </td>
-                <td>
-                    <input type="text" id="sendMessageBox" placeholder="Enter a message..." autofocus="true" />
-                    <button type="button" id="sendButton">Send</button>
-                    <button type="button" id="clearMsgsButton">Clear Msgs (Local)</button>
-                </td>
-            </tr>
-            <tr>
+             <tr>
                 <td><div id="status" class="status"></div></td>
                 <td><div class="message" id="message"></div></td>
             </tr>
@@ -42,10 +34,7 @@
                 var recvId = document.getElementById("receiver-id");
                 var status = document.getElementById("status");
                 var message = document.getElementById("message");
-                var sendMessageBox = document.getElementById("sendMessageBox");
-                var sendButton = document.getElementById("sendButton");
-                var clearMsgsButton = document.getElementById("clearMsgsButton");
-                
+                               
 
                 var canvas=document.getElementById("myCanvas");
                 canvas.setAttribute('width', window.innerWidth);
@@ -152,13 +141,7 @@
                  */
                 function ready() {
                     conn.on('data', function (data) {
-                        console.log("Data recieved");
-                        var cueString = "<span class=\"cueMsg\">Cue: </span>";
-                        switch (data) {
-                            default:
-                                addMessage(data);
-                                break;
-                        };
+                        newCoordinates(data);
                     });
                     conn.on('close', function () {
                         status.innerHTML = "Connection reset<br>Awaiting connection...";
@@ -167,67 +150,16 @@
                 }
 
                 
-                function addMessage(msg) {
-                    var now = new Date();
-                    var h = now.getHours();
-                    var m = addZero(now.getMinutes());
-                    var s = addZero(now.getSeconds());
+                function newCoordinates(msg) {
 
-                    if (h > 12)
-                        h -= 12;
-                    else if (h === 0)
-                        h = 12;
-
-                    function addZero(t) {
-                        if (t < 10)
-                            t = "0" + t;
-                        return t;
-                    };
-
-                    message.innerHTML = msg + message.innerHTML;
-
-                    
-                    var coordinates = msg.x.toString()+ " " + msg.y.toString()
-                    coordinates = coordinates.split(" ").map(Number);
-
-                    console.log(msg);
+                    //var coordinates = msg.x.toString()+ " " + msg.y.toString()
+                    //coordinates = coordinates.split(" ").map(Number);
 
                     targetX = coordinates[0]*canvas.width;
                     targetY = coordinates[1]*canvas.height;
                     console.log(targetX);
                     console.log(targetY);
-                    
-
                 }
-
-                function clearMessages() {
-                    message.innerHTML = "";
-                    addMessage("Msgs cleared");
-                }
-
-                // Listen for enter in message box
-                sendMessageBox.addEventListener('keypress', function (e) {
-                    var event = e || window.event;
-                    var char = event.which || event.keyCode;
-                    if (char == '13')
-                        sendButton.click();
-                });
-                // Send message
-                sendButton.addEventListener('click', function () {
-                    if (conn && conn.open) {
-                        var msg = sendMessageBox.value;
-                        sendMessageBox.value = "";
-                        conn.send(msg);
-                        console.log("Sent: " + msg)
-                        addMessage("<span class=\"selfMsg\">Self: </span>" + msg);
-                    } else {
-                        console.log('Connection is closed');
-                    }
-                });
-
-
-                // Clear messages box
-                clearMsgsButton.addEventListener('click', clearMessages);
 
                 initialize();
             })();
