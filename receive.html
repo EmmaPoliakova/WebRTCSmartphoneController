@@ -152,8 +152,8 @@
                 
                 function newCoordinates(msg) {
 
-                    //var coordinates = msg.x.toString()+ " " + msg.y.toString()
-                    //coordinates = coordinates.split(" ").map(Number);
+                    var coordinates = msg.x.toString()+ " " + msg.y.toString()
+                    coordinates = coordinates.split(" ").map(Number);
 
                     targetX = coordinates[0]*canvas.width;
                     targetY = coordinates[1]*canvas.height;
