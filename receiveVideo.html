@@ -42,14 +42,13 @@
         
         <div class="container">
             <canvas class="output_canvas" width="1280px" height="720px"></canvas>
-            <video class="output_video" width="1280px" height="720px"></video>
+            <video class="output_video" width="auto", height="auto"></video>
             
         </div>
 
         <canvas id="picture_canvas" width="1280px" height="720px"></canvas>
 
-        <video id="remote-video"></video>
-
+ 
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
         <script type="text/javascript">
             (function () {
@@ -120,16 +119,11 @@
 
                         var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
                         peer.on('call', function(call) {
-                        getUserMedia({video: false, audio: true}, function(stream) {
-                            call.answer(stream); // Answer the call with an A/V stream.
+                        getUserMedia({video: false, audio: true}, function() {
+                            call.answer(); // Answer the call with an A/V stream.
                             call.on('stream', function(remoteStream) {
-                                console.log("video");
                                 setRemoteStream(remoteStream)
-
-                            // Show stream in some video/canvas element.
                             });
-                        }, function(err) {
-                            console.log('Failed to get local stream' ,err);
                         });
                 });
                     });
@@ -159,8 +153,7 @@
                     var video = videoElement;
                     video.srcObject = stream;
                     video.play();
-
-                    makeFrames(videoElement);                    
+                    window.requestAnimationFrame(step);                  
 
                     }
 
@@ -175,30 +168,33 @@
 
                     hands.onResults(onResults);
 
-                    var video1,c1,ctx1,c_tmp,ctx_tmp,frame; 
-
-                    function makeFrames(video) {
-                        video1 = video;
-                        c1 = document.getElementById('picture_canvas');
-                        ctx1 = c1.getContext('2d');
-                        c_tmp = document.createElement('canvas');
-                        c_tmp.setAttribute('width', widthV);
-                        c_tmp.setAttribute('height', heightV);
-                        ctx_tmp = c_tmp.getContext('2d');
-                        video.addEventListener('play', computeFrame);
+                   
+                    async function predict(){
+                        await hands.send({image: videoElement});
                     }
 
-                    function computeFrame() {
-                        ctx_tmp.drawImage(video1, 0, 0, widthV, heightV);
-                        frame = ctx_tmp.getImageData(0, 0, widthV, heightV);
-                        ctx1.putImageData(frame, 0, 0);
-                        trackHands();
-                        setTimeout(computeFrame, 500);
+
+                    var previous_stamp;
+
+                    function step(timestamp) {
+                        if (previous_stamp === undefined)
+                            previous_stamp = videoElement.currentTime;
+                   
+                        if (previous_stamp<videoElement.currentTime){
+                            //hands.send({image: videoElement});
+                            predict();
+                            previous_stamp = videoElement.currentTime;
+                            window.requestAnimationFrame(step);
+                            console.log("loaded");
                         }
 
-                    async function trackHands(){
-                        await hands.send({'image': frame});
+                        else{
+                            window.requestAnimationFrame(step);
+                            console.log("not loaded");
+                        }
                     }
+                    
+
 
 
                 function onResults(results) {
