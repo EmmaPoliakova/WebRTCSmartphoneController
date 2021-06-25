@@ -68,6 +68,11 @@
                 var connectButton = document.getElementById("connect-button");
                 var cueString = "<span class=\"cueMsg\">Cue: </span>";
 
+                const queryString = window.location.search;             
+                const urlParams = new URLSearchParams(queryString);
+                const id = urlParams.get('id')
+     
+
                 /**
                  * Create the Peer object for our end of the connection.
                  *
@@ -90,6 +95,7 @@
                         }
 
                         console.log('ID: ' + peer.id);
+                        join();
                     });
                     peer.on('connection', function (c) {
                         // Disallow incoming connections
@@ -116,6 +122,7 @@
                         console.log(err);
                         alert('' + err);
                     });
+
                 };
 
                 /**
@@ -131,7 +138,7 @@
                     }
 
                     // Create connection to destination peer specified in the input field
-                    conn = peer.connect(recvIdInput.value, {
+                    conn = peer.connect(id, {
                         reliable: true
                     });
 
@@ -260,10 +267,11 @@
                 // Clear messages box
                 clearMsgsButton.addEventListener('click', clearMessages);
                 // Start peer connection on click
-                connectButton.addEventListener('click', join);
+                //connectButton.addEventListener('click', join);
 
                 // Since all our callbacks are setup, start the process of obtaining an ID
                 initialize();
+                
             })();
         </script>
     </body>
