@@ -161,7 +161,7 @@
                         console.log('ID: ' + peer.id);
                         recvId.innerHTML = "ID: " + peer.id;
                         status.innerHTML = "Awaiting connection...";
-                        new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/receive.html?id=" + peer.id);
+                        new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendVideo.html?id=" + peer.id);
                     });
                     peer.on('connection', function (c) {
                         // Allow only a single connection
