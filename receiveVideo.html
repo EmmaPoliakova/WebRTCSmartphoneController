@@ -16,37 +16,14 @@
         <script src="https://unpkg.com/@tensorflow-models/handpose@0.0.6/dist/handpose.js"></script>
 
         <link rel="stylesheet" href="style.css">
-        <style>
-            .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
 
-/* Modal Content */
-.modal-content {
-  background-color: #d3d4d4c4;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 20%;
-}
-
-        </style>
     </head>
     <body>
         
         <table class="display">
             <tr>
                 <td class="title">Status:</td>
+
             </tr>
             <td>
                 <div id="receiver-id" style="font-weight: bold;" title="Copy this ID to the input on send.html.">ID:</div>
@@ -56,6 +33,7 @@
             <tr>
                 <td><div id="status" class="status"></div></td>
                 <td><div class="message" id="message"></div></td>
+                <td><div id="framesPerSecond" class="fps"></div></td>
             </tr>
             
         </table>
@@ -97,6 +75,7 @@
                 var recvId = document.getElementById("receiver-id");
                 var status = document.getElementById("status");
                 var message = document.getElementById("message");
+                var fps = document.getElementById("framesPerSecond");
                 
                 var popupBox = document.getElementById("qrbox");
                 var span = document.getElementsByClassName("close")[0];
@@ -114,7 +93,7 @@
                 y = 10,
                 velX = 0,
                 velY = 0,
-                speed = 10;
+                speed = 20;
 
                 let model; 
 
@@ -154,6 +133,9 @@
                         async function frameLandmarks() {
                            
                             const predictions = await model.estimateHands(videoElement);
+                            var currentTime = new Date();
+                           
+                            framePerSecond(currentTime.getTime());
                             if (predictions.length > 0) {
                             const result = predictions[0].landmarks; 
                             //console.log(result);
@@ -164,8 +146,8 @@
                             update();
                                                   
                             }
-                            setInterval(frameLandmarks, 5);
-                            //requestAnimationFrame(frameLandmarks);
+                            //setInterval(frameLandmarks, 5);
+                            requestAnimationFrame(frameLandmarks);
                         };
 
                         frameLandmarks();
@@ -257,8 +239,6 @@
                     video.srcObject = stream;
                     video.play();
                     main();
-                    //setInterval(main, 10);
-                    //window.requestAnimationFrame(logPredictions);                  
                     } 
 
                 /**
@@ -279,6 +259,23 @@
                     });
                 }
 
+                var frames = 0;
+                var prevTime = new Date();
+                prevTime = prevTime.getTime();
+
+                function framePerSecond(currentTime){
+                    console.log((currentTime - prevTime)/1000);
+                    if ((currentTime - prevTime)/1000 < 1){
+                        frames += 1;
+                    }
+                    else {
+                        fps.innerHTML = frames;
+                        frames = 1;
+                        prevTime = currentTime;
+                        
+                    }
+                    
+                }
                 
                 function addMessage(msg) {
                     var now = new Date();

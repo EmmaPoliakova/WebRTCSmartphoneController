@@ -19,32 +19,13 @@
                     <input type="text" id="receiver-id" title="Input the ID from receive.html">
                     <button id="connect-button">Connect</button>
                 </td>
-                <td>
-                    <input type="text" id="sendMessageBox" placeholder="Enter a message..." autofocus="true" />
-                    <button type="button" id="sendButton">Send</button>
-                    <button type="button" id="clearMsgsButton">Clear Msgs (Local)</button>
-                </td>
+                
             </tr>
             <tr>
                 <td><div id="status" class="status"></div></td>
                 <td><div class="message" id="message"></div></td>
             </tr>
-            <tr>
-                <td>
-                    <button type="button" class="control-button" id="resetButton">Reset</button>
-                </td>
-                <td>
-                    <button type="button" class="control-button" id="goButton">Go</button>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <button type="button" class="control-button" id="fadeButton">Fade</button>
-                </td>
-                <td>
-                    <button type="button" class="control-button" id="offButton">Off</button>
-                </td>
-            </tr>
+
         </table>
         <video id="input_video"></video>
 
@@ -58,15 +39,8 @@
                 var recvIdInput = document.getElementById("receiver-id");
                 var status = document.getElementById("status");
                 var message = document.getElementById("message");
-                var goButton = document.getElementById("goButton");
-                var resetButton = document.getElementById("resetButton");
-                var fadeButton = document.getElementById("fadeButton");
-                var offButton = document.getElementById("offButton");
-                var sendMessageBox = document.getElementById("sendMessageBox");
-                var sendButton = document.getElementById("sendButton");
-                var clearMsgsButton = document.getElementById("clearMsgsButton");
                 var connectButton = document.getElementById("connect-button");
-                var cueString = "<span class=\"cueMsg\">Cue: </span>";
+                
 
                 const queryString = window.location.search;             
                 const urlParams = new URLSearchParams(queryString);
@@ -166,7 +140,7 @@
                     });
                     // Handle incoming data (messages only since this is the signal sender)
                     conn.on('data', function (data) {
-                        addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+                        addMessage(data);
                     });
                     conn.on('close', function () {
                         status.innerHTML = "Connection closed";
@@ -192,33 +166,7 @@
                 };
 
                
-                /**
-                 * Send a signal via the peer connection and add it to the log.
-                 * This will only occur if the connection is still alive.
-                 */
-                 function signal(sigName) {
-                    if (conn && conn.open) {
-                        conn.send(sigName);
-                        console.log(sigName + " signal sent");
-                        addMessage(cueString + sigName);
-                    } else {
-                        console.log('Connection is closed');
-                    }
-                }
-
-                goButton.addEventListener('click', function () {
-                    signal("Go");
-                });
-                resetButton.addEventListener('click', function () {
-                    signal("Reset");
-                });
-                fadeButton.addEventListener('click', function () {
-                    signal("Fade");
-                });
-                offButton.addEventListener('click', function () {
-                    signal("Off");
-                });
-
+              
                 function addMessage(msg) {
                     var now = new Date();
                     var h = now.getHours();
@@ -239,36 +187,7 @@
                     message.innerHTML = "<br><span class=\"msg-time\">" + h + ":" + m + ":" + s + "</span>  -  " + msg + message.innerHTML;
                 };
 
-                function clearMessages() {
-                    message.innerHTML = "";
-                    addMessage("Msgs cleared");
-                };
-
-                // Listen for enter in message box
-                sendMessageBox.addEventListener('keypress', function (e) {
-                    var event = e || window.event;
-                    var char = event.which || event.keyCode;
-                    if (char == '13')
-                        sendButton.click();
-                });
-                // Send message
-                sendButton.addEventListener('click', function () {
-                    if (conn && conn.open) {
-                        var msg = sendMessageBox.value;
-                        sendMessageBox.value = "";
-                        conn.send(msg);
-                        console.log("Sent: " + msg);
-                        addMessage("<span class=\"selfMsg\">Self: </span> " + msg);
-                    } else {
-                        console.log('Connection is closed');
-                    }
-                });
-
-                // Clear messages box
-                clearMsgsButton.addEventListener('click', clearMessages);
-                // Start peer connection on click
-                //connectButton.addEventListener('click', join);
-
+                
                 // Since all our callbacks are setup, start the process of obtaining an ID
                 initialize();
                 

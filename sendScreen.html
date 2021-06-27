@@ -16,7 +16,7 @@
         <table class="control">
             <tr>
                 <td class="title">Status:</td>
-                <td class="title">Messages:</td>
+
             </tr>
             <tr>
                 <td>
@@ -24,12 +24,7 @@
                     <input type="text" id="receiver-id" title="Input the ID from receive.html">
                     <button id="connect-button">Connect</button>
                 </td>
-                <td>
-                    <input type="text" id="sendMessageBox" placeholder="Enter a message..." autofocus="true" />
-                    <button type="button" id="sendButton">Send</button>
-                    <button type="button" id="clearMsgsButton">Clear Msgs (Local)</button>
-                </td>
-            </tr>
+                </tr>
             <tr>
                 <td><div id="status" class="status"></div></td>
                 <td><div class="message" id="message"></div></td>
@@ -58,11 +53,12 @@
                 var recvIdInput = document.getElementById("receiver-id");
                 var status = document.getElementById("status");
                 var message = document.getElementById("message");
-                var sendMessageBox = document.getElementById("sendMessageBox");
-                var sendButton = document.getElementById("sendButton");
-                var clearMsgsButton = document.getElementById("clearMsgsButton");
-                var connectButton = document.getElementById("connect-button");
-                var cueString = "<span class=\"cueMsg\">Cue: </span>";
+                
+
+                const queryString = window.location.search;             
+                const urlParams = new URLSearchParams(queryString);
+                const id = urlParams.get('id')
+     
 
 
             var ongoingTouches = [];
@@ -160,7 +156,7 @@
 
                 function passCoordinates(coords){
                     if (conn && conn.open) {
-                            var msg = [coords.pageX*(1280/window.innerWidth), coords.pageY*(720/window.innerHeight)]; 
+                            var msg = [coords.pageX/window.innerWidth, coords.pageY/window.innerHeight]; 
                             console.log(msg);
                             conn.send(msg);
                         } else {
@@ -192,6 +188,7 @@
                         }
 
                         console.log('ID: ' + peer.id);
+                        join();
                     });
                     peer.on('connection', function (c) {
                         // Disallow incoming connections
@@ -233,7 +230,7 @@
                     }
 
                     // Create connection to destination peer specified in the input field
-                    conn = peer.connect(recvIdInput.value, {
+                    conn = peer.connect(id, {
                         reliable: true
                     });
 
@@ -272,19 +269,7 @@
                         return results[1];
                 };
 
-                /**
-                 * Send a signal via the peer connection and add it to the log.
-                 * This will only occur if the connection is still alive.
-                 */
-                 function signal(sigName) {
-                    if (conn && conn.open) {
-                        conn.send(sigName);
-                        console.log(sigName + " signal sent");
-                        addMessage(cueString + sigName);
-                    } else {
-                        console.log('Connection is closed');
-                    }
-                }
+              
                
                 function addMessage(msg) {
                     var now = new Date();
@@ -306,36 +291,7 @@
                     message.innerHTML = "<br><span class=\"msg-time\">" + h + ":" + m + ":" + s + "</span>  -  " + msg + message.innerHTML;
                 };
 
-                function clearMessages() {
-                    message.innerHTML = "";
-                    addMessage("Msgs cleared");
-                };
-
-                // Listen for enter in message box
-                sendMessageBox.addEventListener('keypress', function (e) {
-                    var event = e || window.event;
-                    var char = event.which || event.keyCode;
-                    if (char == '13')
-                        sendButton.click();
-                });
-                // Send message
-                sendButton.addEventListener('click', function () {
-                    if (conn && conn.open) {
-                        var msg = sendMessageBox.value;
-                        sendMessageBox.value = "";
-                        conn.send(msg);
-                        console.log("Sent: " + msg);
-                        addMessage("<span class=\"selfMsg\">Self: </span> " + msg);
-                    } else {
-                        console.log('Connection is closed');
-                    }
-                });
-
-                // Clear messages box
-                clearMsgsButton.addEventListener('click', clearMessages);
-                // Start peer connection on click
-                connectButton.addEventListener('click', join);
-
+               
                 // Since all our callbacks are setup, start the process of obtaining an ID
                 initialize();
 

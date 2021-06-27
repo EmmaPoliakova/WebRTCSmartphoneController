@@ -3,6 +3,8 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" href="style.css">
+        <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
         
 
     </head>
@@ -16,18 +18,28 @@
                 <td>
                     <div id="receiver-id" style="font-weight: bold;" title="Copy this ID to the input on send.html.">ID:</div>
                 </td>
-                <td>
-                    <input type="text" id="sendMessageBox" placeholder="Enter a message..." autofocus="true" />
-                    <button type="button" id="sendButton">Send</button>
-                    <button type="button" id="clearMsgsButton">Clear Msgs (Local)</button>
-                </td>
+            
+                
             </tr>
             <tr>
                 <td><div id="status" class="status"></div></td>
                 <td><div class="message" id="message"></div></td>
+                <td><div id="framesPerSecond" class="fps"></div></td>
             </tr>
 
         </table>
+
+        <center>
+            <div id="qrbox" class="modal">
+    
+                <div class="modal-content">
+                    <p> Scan the qr code to connect your device.</p>
+                    <div id="qrcode"></div>
+                
+                </div>
+              
+              </div>
+            </center>
 
         <canvas id="myCanvas"  style="border:1px solid #000000;"></canvas>
 
@@ -50,10 +62,10 @@
                 var recvId = document.getElementById("receiver-id");
                 var status = document.getElementById("status");
                 var message = document.getElementById("message");
-                var sendMessageBox = document.getElementById("sendMessageBox");
-                var sendButton = document.getElementById("sendButton");
-                var clearMsgsButton = document.getElementById("clearMsgsButton");
+                var fps = document.getElementById("framesPerSecond");
                 
+                var popupBox = document.getElementById("qrbox");
+                var span = document.getElementsByClassName("close")[0];
 
 
 
@@ -112,6 +124,8 @@
                         console.log('ID: ' + peer.id);
                         recvId.innerHTML = "ID: " + peer.id;
                         status.innerHTML = "Awaiting connection...";
+                        new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendVideo.html?id=" + peer.id);
+                        popupBox.style.display = "block";
                     });
                     peer.on('connection', function (c) {
                         // Allow only a single connection
@@ -126,6 +140,7 @@
                         conn = c;
                         console.log("Connected to: " + conn.peer);
                         status.innerHTML = "Connected";
+                        popupBox.style.display = "none";
                         ready();
                     });
 
@@ -195,44 +210,35 @@
                     var coordinates = msg
                     //coordinates = coordinates.split(" ").map(Number);
 
-                    console.log(msg);
+                    var currentTime = new Date();       
+                    framePerSecond(currentTime.getTime());
 
-                    targetX = coordinates[0];//*canvas.width;
-                    targetY = coordinates[1];//*canvas.height;
-                    console.log(targetX);
-                    console.log(targetY);
+                    targetX = coordinates[0]*canvas.width;
+                    targetY = coordinates[1]*canvas.height;
+
+                    //console.log(targetX);
+                    //console.log(targetY);
                     
 
                 }
 
-                function clearMessages() {
-                    message.innerHTML = "";
-                    addMessage("Msgs cleared");
-                }
+                var frames = 0;
+                var prevTime = new Date();
+                prevTime = prevTime.getTime();
 
-                // Listen for enter in message box
-                sendMessageBox.addEventListener('keypress', function (e) {
-                    var event = e || window.event;
-                    var char = event.which || event.keyCode;
-                    if (char == '13')
-                        sendButton.click();
-                });
-                // Send message
-                sendButton.addEventListener('click', function () {
-                    if (conn && conn.open) {
-                        var msg = sendMessageBox.value;
-                        sendMessageBox.value = "";
-                        conn.send(msg);
-                        console.log("Sent: " + msg)
-                        addMessage("<span class=\"selfMsg\">Self: </span>" + msg);
-                    } else {
-                        console.log('Connection is closed');
+                function framePerSecond(currentTime){
+                    console.log((currentTime - prevTime)/1000);
+                    if ((currentTime - prevTime)/1000 < 1){
+                        frames += 1;
                     }
-                });
-
-
-                // Clear messages box
-                clearMsgsButton.addEventListener('click', clearMessages);
+                    else {
+                        fps.innerHTML = frames;
+                        frames = 1;
+                        prevTime = currentTime;
+                        
+                    }
+                    
+                }
 
                 initialize();
             })();
