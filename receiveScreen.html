@@ -9,25 +9,12 @@
 
     </head>
     <body>
-        <table class="display">
-            <tr>
-                <td class="title">Status:</td>
-                <td class="title">Messages:</td>
-            </tr>
-            <tr>
-                <td>
-                    <div id="receiver-id" style="font-weight: bold;" title="Copy this ID to the input on send.html.">ID:</div>
-                </td>
-            
-                
-            </tr>
-            <tr>
-                <td><div id="status" class="status"></div></td>
-                <td><div class="message" id="message"></div></td>
-                <td><div id="framesPerSecond" class="fps"></div></td>
-            </tr>
 
-        </table>
+                <td class="title">Status:</td>
+                <div id="receiver-id" style="font-weight: bold;" title="Copy this ID to the input on send.html.">ID:</div>
+                <div id="status" class="status"></div>
+                <div id="framesPerSecond" class="fps"></div>
+
 
         <center>
             <div id="qrbox" class="modal">
@@ -41,35 +28,27 @@
               </div>
             </center>
 
-        <canvas id="myCanvas"  style="border:1px solid #000000;"></canvas>
+        <canvas id="animationCanvas"  style="border:1px solid #000000;"></canvas>
+
+
+
 
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
         <script type="text/javascript">
 
-            var canvas=document.getElementById("myCanvas"),
-
+            // ball canvas
+            var canvas=document.getElementById("animationCanvas"),
             ctx = canvas.getContext("2d");
-           
             canvas.setAttribute('width', window.innerWidth);
             canvas.setAttribute('height', window.innerHeight);
-         
-            (function () {
+            document.body.style.overflow = 'hidden'
 
-                var lastPeerId = null;
-                var peer = null; // Own peer object
-                var peerId = null;
-                var conn = null;
-                var recvId = document.getElementById("receiver-id");
-                var status = document.getElementById("status");
-                var message = document.getElementById("message");
-                var fps = document.getElementById("framesPerSecond");
-                
-                var popupBox = document.getElementById("qrbox");
-                var span = document.getElementsByClassName("close")[0];
+            //pup up window with QR
+            var popupBox = document.getElementById("qrbox");
+            var span = document.getElementsByClassName("close")[0];
 
-
-
-                var targetX = 0,
+            //ball settings
+            var targetX = 0,
                 targetY = 0,
                 x = 1000,
                 y = 700,
@@ -77,157 +56,139 @@
                 velY = 0,
                 speed = 10;
 
-                function update(){
-                    var tx = targetX - x,
-                        ty = targetY - y,
-                        dist = Math.sqrt(tx*tx+ty*ty),
-                        rad = Math.atan2(ty,tx),
-                        angle = rad/Math.PI * 180;
+            // count frames variables
+            var frames = 0;
+            var prevTime = new Date();
+            prevTime = prevTime.getTime(); 
+            
+            // peer variables
+            var lastPeerId = null;
+            var peer = null; // Own peer object
+            var peerId = null;
+            var conn = null;
 
-                        velX = (tx/dist)*speed,
-                        velY = (ty/dist)*speed;
+            var recvId = document.getElementById("receiver-id");
+            var status = document.getElementById("status");
 
-                        x += velX
-                        y += velY
+            var fps = document.getElementById("framesPerSecond");
 
-                        ctx.clearRect(0,0,canvas.width,canvas.height);
-                        ctx.beginPath();
-                        ctx.arc(x,y,20,0,Math.PI*2);
-                        ctx.fill();
 
-                    setTimeout(update,5);
-                }
+            // ball animation
+            function update(){
+                var tx = targetX - x,
+                    ty = targetY - y,
+                    dist = Math.sqrt(tx*tx+ty*ty),
+                    rad = Math.atan2(ty,tx),
+                    angle = rad/Math.PI * 180;
 
-                update();
+                    velX = (tx/dist)*speed,
+                    velY = (ty/dist)*speed;
 
-                /**
-                 * Create the Peer object for our end of the connection.
-                 *
-                 * Sets up callbacks that handle any events related to our
-                 * peer object.
-                 */
-                 function initialize() {
-                    // Create own peer object with connection to shared PeerJS server
-                    peer = new Peer(null, {
-                        debug: 2
-                    });
+                    x += velX
+                    y += velY
 
-                    peer.on('open', function (id) {
-                        // Workaround for peer.reconnect deleting previous id
-                        if (peer.id === null) {
-                            console.log('Received null id from peer open');
-                            peer.id = lastPeerId;
-                        } else {
-                            lastPeerId = peer.id;
-                        }
+                    ctx.clearRect(0,0,canvas.width,canvas.height);
+                    ctx.beginPath();
+                    ctx.arc(x,y,20,0,Math.PI*2);
+                    ctx.fill();
 
-                        console.log('ID: ' + peer.id);
-                        recvId.innerHTML = "ID: " + peer.id;
-                        status.innerHTML = "Awaiting connection...";
-                        new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendScreen.html?id=" + peer.id);
-                        popupBox.style.display = "block";
-                    });
-                    peer.on('connection', function (c) {
-                        // Allow only a single connection
-                        if (conn && conn.open) {
-                            c.on('open', function() {
-                                c.send("Already connected to another client");
-                                setTimeout(function() { c.close(); }, 500);
-                            });
-                            return;
-                        }
+                setTimeout(update,5);
+            }                
 
-                        conn = c;
-                        console.log("Connected to: " + conn.peer);
-                        status.innerHTML = "Connected";
-                        popupBox.style.display = "none";
-                        ready();
-                    });
 
-                    peer.on('disconnected', function () {
-                        status.innerHTML = "Connection lost. Please reconnect";
-                        console.log('Connection lost. Please reconnect');
+             //Create the Peer object for our end of the connection.
+             
+                function initialize() {
+                // Create own peer object with connection to shared PeerJS server
+                peer = new Peer(null, {
+                    debug: 2
+                });
 
-                        // Workaround for peer.reconnect deleting previous id
+                peer.on('open', function (id) {
+                    // Work-around for peer.reconnect deleting previous id
+                    if (peer.id === null) {
+                        console.log('Received null id from peer open');
                         peer.id = lastPeerId;
-                        peer._lastServerId = lastPeerId;
-                        peer.reconnect();
-                    });
+                    } else {
+                        lastPeerId = peer.id;
+                    }
 
-                    peer.on('close', function() {
-                        conn = null;
-                        status.innerHTML = "Connection destroyed. Please refresh";
-                        console.log('Connection destroyed');
-                    });
+                    console.log('ID: ' + peer.id);
+                    recvId.innerHTML = "ID: " + peer.id;
+                    status.innerHTML = "Awaiting connection...";
+                    new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendScreen.html?id=" + peer.id);
+                    popupBox.style.display = "block";
+                });
 
-                    peer.on('error', function (err) {
-                        console.log(err);
-                        alert('' + err);
-                    });
-                };
+                peer.on('connection', function (c) {
+                    // Allow only a single connection
+                    if (conn && conn.open) {
+                        c.on('open', function() {
+                            c.send("Already connected to another client");
+                            setTimeout(function() { c.close(); }, 500);
+                        });
+                        return;
+                    }
 
-                /**
-                 * Triggered once a connection has been achieved.
-                 * Defines callbacks to handle incoming data and connection events.
-                 */
-                function ready() {
-                    conn.on('data', function (data) {
-                        console.log("Data recieved");
-                        //var cueString = "<span class=\"cueMsg\">Cue: </span>";
-                        switch (data) {
-                            default:
-                                addMessage(data);
-                                break;
-                        };
-                    });
-                    conn.on('close', function () {
-                        status.innerHTML = "Connection reset<br>Awaiting connection...";
-                        conn = null;
-                    });
-                }
+                    conn = c;
+                    console.log("Connected to: " + conn.peer);
+                    status.innerHTML = "Connected";
+                    popupBox.style.display = "none";
+                    ready();
+                });
+
+                peer.on('disconnected', function () {
+                    status.innerHTML = "Connection lost. Please reconnect";
+                    console.log('Connection lost. Please reconnect');
+
+                    // Work-around for peer.reconnect deleting previous id
+                    peer.id = lastPeerId;
+                    peer._lastServerId = lastPeerId;
+                    peer.reconnect();
+                });
+
+                peer.on('close', function() {
+                    conn = null;
+                    status.innerHTML = "Connection destroyed. Please refresh";
+                    console.log('Connection destroyed');
+                });
+
+                peer.on('error', function (err) {
+                    console.log(err);
+                    alert('' + err);
+                });
+            };
+
+            /**
+             * Triggered once a connection has been achieved.
+             * Defines callbacks to handle incoming data and connection events.
+             */
+            function ready() {
+                conn.on('data', function (data) {               
+                    processCoordinates(data);
+
+                });
+                conn.on('close', function () {
+                    status.innerHTML = "Connection reset<br>Awaiting connection...";
+                    conn = null;
+                });
+            }
 
                 
-                function addMessage(msg) {
-                    var now = new Date();
-                    var h = now.getHours();
-                    var m = addZero(now.getMinutes());
-                    var s = addZero(now.getSeconds());
-
-                    if (h > 12)
-                        h -= 12;
-                    else if (h === 0)
-                        h = 12;
-
-                    function addZero(t) {
-                        if (t < 10)
-                            t = "0" + t;
-                        return t;
-                    };
-
-                    //message.innerHTML = msg + message.innerHTML;
-
-                    
+                function processCoordinates(msg) {
+            
                     var coordinates = msg
-                    //coordinates = coordinates.split(" ").map(Number);
+                    var currentTime = new Date();    
 
-                    var currentTime = new Date();       
                     framePerSecond(currentTime.getTime());
-
-                    targetX = coordinates[0]*canvas.width;
-                    targetY = coordinates[1]*canvas.height;
-
-                    //console.log(targetX);
-                    //console.log(targetY);
-                    
-
+                    if (Math.abs(targetX - coordinates[0]*canvas.width)>2 && Math.abs(targetY - coordinates[1]*canvas.height)>2){
+                        targetX = coordinates[0]*canvas.width;
+                        targetY = coordinates[1]*canvas.height;
+                    }
                 }
 
-                var frames = 0;
-                var prevTime = new Date();
-                prevTime = prevTime.getTime();
 
                 function framePerSecond(currentTime){
-                    console.log((currentTime - prevTime)/1000);
                     if ((currentTime - prevTime)/1000 < 1){
                         frames += 1;
                     }
@@ -241,7 +202,8 @@
                 }
 
                 initialize();
-            })();
+                update();
+
         </script>
     </body>
 </html>

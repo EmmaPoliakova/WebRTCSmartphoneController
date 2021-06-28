@@ -8,11 +8,11 @@
 
         <script src="https://unpkg.com/@tensorflow/tfjs-core@2.1.0/dist/tf-core.js"></script>
         <script src="https://unpkg.com/@tensorflow/tfjs-converter@2.1.0/dist/tf-converter.js"></script>
-        
+
         <!-- You must explicitly require a TF.js backend if you're not using the tfs union bundle. -->
         <script src="https://unpkg.com/@tensorflow/tfjs-backend-webgl@2.1.0/dist/tf-backend-webgl.js"></script>
         <!-- Alternatively you can use the WASM backend: <script src="https://unpkg.com/@tensorflow/tfjs-backend-wasm@2.1.0/dist/tf-backend-wasm.js"></script> -->
-        
+
         <script src="https://unpkg.com/@tensorflow-models/handpose@0.0.6/dist/handpose.js"></script>
 
         <link rel="stylesheet" href="style.css">
@@ -59,9 +59,6 @@
 
         <canvas id="myCanvas"  style="border:1px solid #000000;"></canvas>
 
-       
-
-      
 
  
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
@@ -85,7 +82,9 @@
                 canvas.setAttribute('width', window.innerWidth);
                 canvas.setAttribute('height', window.innerHeight);
                 ctx = canvas.getContext("2d");
-                
+
+                var scaleX = 0, 
+                    scaleY = 0                
 
                 var targetX = 0,
                 targetY = 0,
@@ -133,14 +132,19 @@
                         async function frameLandmarks() {
                            
                             const predictions = await model.estimateHands(videoElement);
+                            
                             var currentTime = new Date();
                            
                             framePerSecond(currentTime.getTime());
                             if (predictions.length > 0) {
-                            const result = predictions[0].landmarks; 
-                            //console.log(result);
-                            targetX = result[8][0]*3;
-                            targetY = result[8][1]*1.5; 
+                            const result = predictions[0].annotations; 
+                            //console.log(result["indexFinger"][0][0]);
+                            var resultX = (result["indexFinger"][0][0] / scaleX) * canvas.width;
+                            var resultY = (result["indexFinger"][0][1] / scaleY) * canvas.height; 
+                            if (Math.abs(targetX - resultX)>2 && Math.abs(targetY - resultY)>2){
+                            targetX = resultX;
+                            targetY = resultY; 
+                            }
                             //console.log(targetX);
                             //console.log(targetY); 
                             update();
@@ -238,6 +242,12 @@
                     var video = videoElement;
                     video.srcObject = stream;
                     video.play();
+                    video.addEventListener("loadedmetadata", function () {
+                        console.log("width:", this.videoWidth);
+                        console.log("height:", this.videoHeight);
+                        scaleX = this.videoWidth * 2; 
+                        scaleY = this.videoHeight * 2;
+                    });
                     main();
                     } 
 
@@ -264,7 +274,7 @@
                 prevTime = prevTime.getTime();
 
                 function framePerSecond(currentTime){
-                    console.log((currentTime - prevTime)/1000);
+                    //console.log((currentTime - prevTime)/1000);
                     if ((currentTime - prevTime)/1000 < 1){
                         frames += 1;
                     }
