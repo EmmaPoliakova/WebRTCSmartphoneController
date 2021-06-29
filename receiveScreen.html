@@ -48,6 +48,7 @@
             var span = document.getElementsByClassName("close")[0];
 
             var colours = ["green", "blue", "red", "yellow", "orange"];
+            var fingers = 0;
 
             //ball settings
             var targetX = [10,10,10,10,10],
@@ -80,7 +81,7 @@
 
                 ctx.clearRect(0,0,canvas.width,canvas.height);
 
-                for (var j = 0; j<5; j++){
+                for (var j = 0; j<fingers; j++){
                     var tx = targetX[j] - x[j],
                         ty = targetY[j] - y[j],
                         dist = Math.sqrt(tx*tx+ty*ty),
@@ -190,7 +191,8 @@
             
                     //ctx.clearRect(0,0,canvas.width,canvas.height);
                     var coordinates = msg
-                    var currentTime = new Date();   
+                    var currentTime = new Date();  
+                    fingers = coordinates.length;
 
                     for (var i=0; i < coordinates.length; i++) {
                         targetX[i] = coordinates[i][0]*canvas.width;
@@ -219,7 +221,7 @@
                     
                 }
 
-                //update();
+                update();
                 initialize();
                 
 
