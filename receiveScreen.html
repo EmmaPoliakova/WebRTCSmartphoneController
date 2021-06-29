@@ -178,13 +178,15 @@
                 function processCoordinates(msg) {
             
                     var coordinates = msg
-                    var currentTime = new Date();    
+                    var currentTime = new Date();   
+                    console.log(msg); 
 
-                    framePerSecond(currentTime.getTime());
-                    if (Math.abs(targetX - coordinates[0]*canvas.width)>2 && Math.abs(targetY - coordinates[1]*canvas.height)>2){
-                        targetX = coordinates[0]*canvas.width;
-                        targetY = coordinates[1]*canvas.height;
-                    }
+                    //framePerSecond(currentTime.getTime());
+
+                    //if (Math.abs(targetX - coordinates[0]*canvas.width)>2 && Math.abs(targetY - coordinates[1]*canvas.height)>2){
+                    //    targetX = coordinates[0]*canvas.width;
+                   //     targetY = coordinates[1]*canvas.height;
+                   // }
                 }
 
 

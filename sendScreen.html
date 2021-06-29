@@ -109,6 +109,7 @@
                     //   yellow - one tap (or hold)
                     //   pink - two taps
                     //   lightblue - more than two taps
+                    passCoordinates(ev.targetTouches.length);
                     switch (ev.targetTouches.length) {
                     case 1:
                         // Single tap`
@@ -185,7 +186,7 @@
 
                 function passCoordinates(coords){
                     if (conn && conn.open) {
-                            var msg = [coords.pageX/window.innerWidth, coords.pageY/window.innerHeight]; 
+                            var msg = coords; 
                             console.log(msg);
                             conn.send(msg);
                         } else {
