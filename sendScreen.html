@@ -67,41 +67,10 @@
                 canvasElement.setAttribute('width', window.innerWidth);
                 canvasElement.setAttribute('height', window.innerHeight);
                 var canvasCtx = canvasElement.getContext('2d');
-
-
-
                 
-
-                var logEvents = false;
 
                 // Touch Point cache
                 var tpCache = new Array();
-
-                function enableLog(ev) {
-                logEvents = logEvents ? false : true;
-                }
-
-                function log(name, ev, printTargetIds) {
-                var o = document.getElementsByTagName('output')[0];
-                var s = name + ": touches = " + ev.touches.length +
-                                " ; targetTouches = " + ev.targetTouches.length +
-                                " ; changedTouches = " + ev.changedTouches.length;
-                o.innerHTML += s + " <br>";
-
-                if (printTargetIds) {
-                    s = "";
-                    for (var i=0; i < ev.targetTouches.length; i++) {
-                    s += "... id = " + ev.targetTouches[i].identifier + " <br>";
-                    }
-                    o.innerHTML += s;
-                }
-                }
-
-                function clearLog(event) {
-                var o = document.getElementsByTagName('output')[0];
-                o.innerHTML = "";
-                }
-
 
                 function createTouchArray(ev) {
                     // Change background color based on the number simultaneous touches
@@ -109,7 +78,7 @@
                     //   yellow - one tap (or hold)
                     //   pink - two taps
                     //   lightblue - more than two taps
-                    passCoordinates(ev.targetTouches.length);
+                    passCoordinates(ev.targetTouches);
                     switch (ev.targetTouches.length) {
                     case 1:
                         // Single tap`
@@ -134,13 +103,12 @@
                     // of two, and so on.
                     
                     ev.preventDefault();
-                    // Cache the touch points for later processing of 2-touch pinch/zoom
                     
                     for (var i=0; i < ev.targetTouches.length; i++) {
                         tpCache.push(ev.targetTouches[i]);
                     }
                     
-                    if (logEvents) log("touchStart", ev, true);
+                    
                     createTouchArray(ev);
                     
                 }
@@ -154,17 +122,17 @@
                     // indicate the target received a move event.
                     //
                     ev.preventDefault();
-                    if (logEvents) log("touchMove", ev, false);
+                    createTouchArray(ev);
+                    
                     // To avoid too much color flashing many touchmove events are started,
                     // don't update the background if two touch points are active
-                    //if (!(ev.touches.length == 2 && ev.targetTouches.length == 2))
-                    //update_background(ev);
+
 
                 }
 
                 function end_handler(ev) {
                     ev.preventDefault();
-                    if (logEvents) log(ev.type, ev, false);
+                    
                     if (ev.targetTouches.length == 0) {
                         // Restore background and outline to original values
                         
@@ -186,7 +154,11 @@
 
                 function passCoordinates(coords){
                     if (conn && conn.open) {
-                            var msg = coords; 
+                        coordinates = new Array(); 
+                        for (var i=0; i < coords.length; i++) {
+                            coordinates.push([coords[i].clientX, coords[i].clientY]);
+                            }
+                            var msg = coordinates; 
                             console.log(msg);
                             conn.send(msg);
                         } else {
