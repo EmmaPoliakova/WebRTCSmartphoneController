@@ -47,13 +47,15 @@
             var popupBox = document.getElementById("qrbox");
             var span = document.getElementsByClassName("close")[0];
 
+            var colours = ["green", "blue", "red", "yellow", "orange"];
+
             //ball settings
-            var targetX = 0,
-                targetY = 0,
-                x = 1000,
-                y = 700,
-                velX = 0,
-                velY = 0,
+            var targetX = [10,10,10,10,10],
+                targetY = [10,10,10,10,10],
+                x = [0,0,0,0,0],
+                y = [0,0,0,0,0],
+                velX = [0,0,0,0,0],
+                velY = [0,0,0,0,0],
                 speed = 10;
 
             // count frames variables
@@ -75,25 +77,33 @@
 
             // ball animation
             function update(){
-                var tx = targetX - x,
-                    ty = targetY - y,
-                    dist = Math.sqrt(tx*tx+ty*ty),
-                    rad = Math.atan2(ty,tx),
-                    angle = rad/Math.PI * 180;
 
-                    velX = (tx/dist)*speed,
-                    velY = (ty/dist)*speed;
+                ctx.clearRect(0,0,canvas.width,canvas.height);
 
-                    x += velX
-                    y += velY
+                for (var j = 0; j<5; j++){
+                    var tx = targetX[j] - x[j],
+                        ty = targetY[j] - y[j],
+                        dist = Math.sqrt(tx*tx+ty*ty),
+                        rad = Math.atan2(ty,tx),
+                        angle = rad/Math.PI * 180;
 
-                    ctx.clearRect(0,0,canvas.width,canvas.height);
-                    ctx.beginPath();
-                    ctx.arc(x,y,20,0,Math.PI*2);
-                    ctx.fill();
+                        velX[j] = (tx/dist)*speed,
+                        velY[j] = (ty/dist)*speed;
 
-                //setTimeout(update,5);
-            }                
+                        x[j] += velX[j]
+                        y[j] += velY[j]
+
+                        
+                        ctx.beginPath();
+                        ctx.fillStyle = colours[j];
+                        ctx.arc(x[j],y[j],20,0,Math.PI*2);
+                        ctx.fill();
+                }
+
+                setTimeout(update,10);
+            }     
+            
+    
 
 
              //Create the Peer object for our end of the connection.
@@ -174,7 +184,7 @@
                 });
             }
 
-                var colours = ["green", "blue", "red", "yellow", "orange"];
+                
                 
                 function processCoordinates(msg) {
             
@@ -183,11 +193,8 @@
                     var currentTime = new Date();   
 
                     for (var i=0; i < coordinates.length; i++) {
-
-                        ctx.beginPath();
-                        ctx.fillStyle = colours[i];
-                        ctx.arc(coordinates[i][0]*canvas.width,coordinates[i][1]*canvas.height,20,0,Math.PI*2);
-                        ctx.fill();
+                        targetX[i] = coordinates[i][0]*canvas.width;
+                        targetY[i] = coordinates[i][1]*canvas.height;
                     }
 
                     framePerSecond(currentTime.getTime());
@@ -207,8 +214,9 @@
                     
                 }
 
-                initialize();
                 update();
+                initialize();
+                
 
         </script>
     </body>
