@@ -67,72 +67,24 @@
                 canvasElement.setAttribute('width', window.innerWidth);
                 canvasElement.setAttribute('height', window.innerHeight);
                 var canvasCtx = canvasElement.getContext('2d');
-                
-
-                // Touch Point cache
-                var tpCache = new Array();
-
-                function createTouchArray(ev) {
-                    // Change background color based on the number simultaneous touches
-                    // in the event's targetTouches list:
-                    //   yellow - one tap (or hold)
-                    //   pink - two taps
-                    //   lightblue - more than two taps
-                    passCoordinates(ev.targetTouches);
-                    switch (ev.targetTouches.length) {
-                    case 1:
-                        // Single tap`
-                        console.log(1);
-                        break;
-                    case 2:
-                        // Two simultaneous touches
-                        console.log(2);
-                        break;
-                    default:
-                        console.log(3);
-                        // More than two simultaneous touches
-                        
-                    }
-                }
+                   
 
                 function start_handler(ev) {
-                    // If the user makes simultaneious touches, the browser will fire a
-                    // separate touchstart event for each touch point. Thus if there are
-                    // three simultaneous touches, the first touchstart event will have
-                    // targetTouches length of one, the second event will have a length
-                    // of two, and so on.
                     
-                    ev.preventDefault();
-                    
-                    for (var i=0; i < ev.targetTouches.length; i++) {
-                        tpCache.push(ev.targetTouches[i]);
-                    }
-                    
-                    
-                    createTouchArray(ev);
+                    ev.preventDefault();                                   
+                    passCoordinates(ev.targetTouches);
                     
                 }
 
                 function move_handler(ev) {
-                    // Note: if the user makes more than one "simultaneous" touches, most browsers
-                    // fire at least one touchmove event and some will fire several touchmoves.
-                    // Consequently, an application might want to "ignore" some touchmoves.
-                    //
-                    // This function sets the target element's outline to "dashed" to visualy
-                    // indicate the target received a move event.
-                    //
-                    ev.preventDefault();
-                    createTouchArray(ev);
-                    
-                    // To avoid too much color flashing many touchmove events are started,
-                    // don't update the background if two touch points are active
 
+                    ev.preventDefault();
+                    passCoordinates(ev.targetTouches);
 
                 }
 
                 function end_handler(ev) {
-                    ev.preventDefault();
-                    
+                    ev.preventDefault();    
                     if (ev.targetTouches.length == 0) {
                         // Restore background and outline to original values
                         
@@ -156,10 +108,9 @@
                     if (conn && conn.open) {
                         coordinates = new Array(); 
                         for (var i=0; i < coords.length; i++) {
-                            coordinates.push([coords[i].clientX, coords[i].clientY]);
+                            coordinates.push([coords[i].clientX/canvasElement.width, coords[i].clientY/canvasElement.height]);
                             }
                             var msg = coordinates; 
-                            console.log(msg);
                             conn.send(msg);
                         } else {
                             console.log('Connection is closed');

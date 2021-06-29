@@ -174,27 +174,23 @@
                 });
             }
 
+                var colours = ["green", "blue", "red", "yellow", "orange"];
                 
                 function processCoordinates(msg) {
             
                     ctx.clearRect(0,0,canvas.width,canvas.height);
                     var coordinates = msg
                     var currentTime = new Date();   
-                    console.log(msg); 
-                    
+
                     for (var i=0; i < coordinates.length; i++) {
 
                         ctx.beginPath();
-                        ctx.arc(coordinates[i][0],coordinates[i][1],20,0,Math.PI*2);
+                        ctx.fillStyle = colours[i];
+                        ctx.arc(coordinates[i][0]*canvas.width,coordinates[i][1]*canvas.height,20,0,Math.PI*2);
                         ctx.fill();
                     }
 
-                    //framePerSecond(currentTime.getTime());
-
-                    //if (Math.abs(targetX - coordinates[0]*canvas.width)>2 && Math.abs(targetY - coordinates[1]*canvas.height)>2){
-                    //    targetX = coordinates[0]*canvas.width;
-                   //     targetY = coordinates[1]*canvas.height;
-                   // }
+                    framePerSecond(currentTime.getTime());
                 }
 
 
