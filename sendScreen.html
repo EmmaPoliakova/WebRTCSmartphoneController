@@ -45,8 +45,8 @@
            
 
             
-            (function () {
 
+                // peer variables
                 var lastPeerId = null;
                 var peer = null; // own peer object
                 var conn = null;
@@ -55,103 +55,130 @@
                 var message = document.getElementById("message");
                 
 
+                // peer id from url variables
                 const queryString = window.location.search;             
                 const urlParams = new URLSearchParams(queryString);
                 const id = urlParams.get('id')
      
 
 
-            var ongoingTouches = [];
-            var canvasElement = document.getElementsByClassName('input_canvas')[0];
-            canvasElement.setAttribute('width', window.innerWidth);
-            canvasElement.setAttribute('height', window.innerHeight);
-            var canvasCtx = canvasElement.getContext('2d');
+                // touch input canvas varaibles
+                var canvasElement = document.getElementsByClassName('input_canvas')[0];
+                canvasElement.setAttribute('width', window.innerWidth);
+                canvasElement.setAttribute('height', window.innerHeight);
+                var canvasCtx = canvasElement.getContext('2d');
 
-            function startup() {
-                canvasElement.addEventListener("touchstart", handleStart, false);
-                canvasElement.addEventListener("touchend", handleEnd, false);
-                canvasElement.addEventListener("touchcancel", handleCancel, false);
-                canvasElement.addEventListener("touchmove", handleMove, false);
-            }
 
-            document.addEventListener("DOMContentLoaded", startup);
 
-            function copyTouch({ identifier, pageX, pageY }) {
-                return { identifier, pageX, pageY };
-            }
+                
 
-            function ongoingTouchIndexById(idToFind) {
-            for (var i = 0; i < ongoingTouches.length; i++) {
-                var id = ongoingTouches[i].identifier;
+                var logEvents = false;
 
-                if (id == idToFind) {
-                return i;
+                // Touch Point cache
+                var tpCache = new Array();
+
+                function enableLog(ev) {
+                logEvents = logEvents ? false : true;
                 }
-            }
-            return -1;    // not found
-            }
+
+                function log(name, ev, printTargetIds) {
+                var o = document.getElementsByTagName('output')[0];
+                var s = name + ": touches = " + ev.touches.length +
+                                " ; targetTouches = " + ev.targetTouches.length +
+                                " ; changedTouches = " + ev.changedTouches.length;
+                o.innerHTML += s + " <br>";
+
+                if (printTargetIds) {
+                    s = "";
+                    for (var i=0; i < ev.targetTouches.length; i++) {
+                    s += "... id = " + ev.targetTouches[i].identifier + " <br>";
+                    }
+                    o.innerHTML += s;
+                }
+                }
+
+                function clearLog(event) {
+                var o = document.getElementsByTagName('output')[0];
+                o.innerHTML = "";
+                }
 
 
-            function handleStart(evt) {
-                evt.preventDefault();
-                console.log("touchstart.");
-                var touches = evt.changedTouches;
+                function createTouchArray(ev) {
+                    // Change background color based on the number simultaneous touches
+                    // in the event's targetTouches list:
+                    //   yellow - one tap (or hold)
+                    //   pink - two taps
+                    //   lightblue - more than two taps
+                    switch (ev.targetTouches.length) {
+                    case 1:
+                        // Single tap`
+                        
+                        break;
+                    case 2:
+                        // Two simultaneous touches
+                        
+                        break;
+                    default:
+                        // More than two simultaneous touches
+                        
+                    }
 
-                for (var i = 0; i < touches.length; i++) {
-                    console.log("touchstart:" + i + "...");
-                    ongoingTouches.push(copyTouch(touches[i]));
-                    //console.log(touches[i].pageX, touches[i].pageY)
-                    passCoordinates(touches[i]); 
-
+                function start_handler(ev) {
+                    // If the user makes simultaneious touches, the browser will fire a
+                    // separate touchstart event for each touch point. Thus if there are
+                    // three simultaneous touches, the first touchstart event will have
+                    // targetTouches length of one, the second event will have a length
+                    // of two, and so on.
+                    
+                    ev.preventDefault();
+                    // Cache the touch points for later processing of 2-touch pinch/zoom
+                    
+                    for (var i=0; i < ev.targetTouches.length; i++) {
+                        tpCache.push(ev.targetTouches[i]);
+                    }
+                    
+                    if (logEvents) log("touchStart", ev, true);
+                    createTouchArray(ev);
                     }
                 }
-                function handleMove(evt) {
-                    evt.preventDefault();
-                    var touches = evt.changedTouches;
 
-                    for (var i = 0; i < touches.length; i++) {
-                        var idx = ongoingTouchIndexById(touches[i].identifier);
+                function move_handler(ev) {
+                    // Note: if the user makes more than one "simultaneous" touches, most browsers
+                    // fire at least one touchmove event and some will fire several touchmoves.
+                    // Consequently, an application might want to "ignore" some touchmoves.
+                    //
+                    // This function sets the target element's outline to "dashed" to visualy
+                    // indicate the target received a move event.
+                    //
+                    ev.preventDefault();
+                    if (logEvents) log("touchMove", ev, false);
+                    // To avoid too much color flashing many touchmove events are started,
+                    // don't update the background if two touch points are active
+                    if (!(ev.touches.length == 2 && ev.targetTouches.length == 2))
+                    update_background(ev);
 
-                        if (idx >= 0) {
-                            console.log("continuing touch "+idx);
-                            console.log("ctx.moveTo(" + ongoingTouches[idx].pageX + ", " + ongoingTouches[idx].pageY + ");");
-                            passCoordinates(ongoingTouches[idx]); 
-                            ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
-                        } else {
-                            console.log("can't figure out which touch to continue");
-                            }
-                        }
                     }
 
-                    function handleEnd(evt) {
-                        evt.preventDefault();
-                        //log("touchend");
-                        var touches = evt.changedTouches;
+                function end_handler(ev) {
+                    ev.preventDefault();
+                    if (logEvents) log(ev.type, ev, false);
+                    if (ev.targetTouches.length == 0) {
+                        // Restore background and outline to original values
+                        
+                    }
+                }
 
-                        for (var i = 0; i < touches.length; i++) {
-                            var idx = ongoingTouchIndexById(touches[i].identifier);
+                function set_handlers(e) {
+                    // Install event handlers for the given element
+                    var el = document.getElementById("canvas");
+                    el.ontouchstart = start_handler;
+                    el.ontouchmove = move_handler;
+                    // Use same handler for touchcancel and touchend
+                    el.ontouchcancel = end_handler;
+                    el.ontouchend = end_handler;
+                }
 
-                            if (idx >= 0) {
-                            ongoingTouches.splice(idx, 1);  // remove it; we're done
-                            } else {
-                            console.log("can't figure out which touch to end");
-                            }
-                        }
-                        }
-
-
-                    function handleCancel(evt) {
-                        evt.preventDefault();
-                        console.log("touchcancel.");
-                        var touches = evt.changedTouches;
-
-                        for (var i = 0; i < touches.length; i++) {
-                            var idx = ongoingTouchIndexById(touches[i].identifier);
-                            ongoingTouches.splice(idx, 1);  // remove it; we're done
-                        }
-                        }
-
-
+                document.addEventListener("DOMContentLoaded", set_handlers);
 
 
                 function passCoordinates(coords){
@@ -297,8 +324,6 @@
 
 
            
-            })();
-
 
         </script>
     </body>

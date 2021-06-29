@@ -32,7 +32,6 @@
       
             <tr>
                 <td><div id="status" class="status"></div></td>
-                <td><div class="message" id="message"></div></td>
                 <td><div id="framesPerSecond" class="fps"></div></td>
             </tr>
             
@@ -52,18 +51,28 @@
           
 
         
-        <div class="container">   
-            <video class="output_video" width="auto", height="auto"></video>
-            
-        </div>
+        <div id="canvas-wrapper">
+            <canvas id="output" style=""></canvas>
+            <video id="video" playsinline style="
+            -webkit-transform: scaleX(-1);
+            transform: scaleX(-1);
+            visibility: hidden;
+            width: auto;
+            height: auto;
+            position: absolute;
+            ">
+            </video>
+          </div>
+
+          <div id="scatter-gl-container"></div>
 
         <canvas id="myCanvas"  style="border:1px solid #000000;"></canvas>
 
 
- 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script> 
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
         <script type="text/javascript">
-            (function () {
+            
 
                 var lastPeerId = null;
                 var peer = null; // Own peer object
@@ -78,11 +87,13 @@
                 var span = document.getElementsByClassName("close")[0];
                                 
                 const videoElement = document.getElementsByClassName('output_video')[0];
-                var canvas=document.getElementById("myCanvas");
-                canvas.setAttribute('width', window.innerWidth);
-                canvas.setAttribute('height', window.innerHeight);
-                ctx = canvas.getContext("2d");
+                var canvas1=document.getElementById("myCanvas");
+                canvas1.setAttribute('width', window.innerWidth);
+                canvas1.setAttribute('height', window.innerHeight);
+                ctx1 = canvas1.getContext("2d");
 
+                var video; 
+    
                 var scaleX = 0, 
                     scaleY = 0                
 
@@ -94,7 +105,7 @@
                 velY = 0,
                 speed = 20;
 
-                let model; 
+                //let model; 
 
                 function update(){
                     var tx = targetX - x,
@@ -117,7 +128,7 @@
                     //setTimeout(update,2);
                 }
 
-                update();
+               // update();
                 
 
 
@@ -125,9 +136,7 @@
                     // Load the MediaPipe handpose model.
 
                     model = await handpose.load();
-                    // Pass in a video stream (or an image, canvas, or 3D tensor) to obtain a
-                    // hand prediction from the MediaPipe graph.
-                    //setTimeout(update,10);
+                  
                   
                         async function frameLandmarks() {
                            
@@ -238,17 +247,17 @@
 
 
                 function setRemoteStream(stream){
-   
-                    var video = videoElement;
+
+                    video = videoElement;
                     video.srcObject = stream;
-                    video.play();
                     video.addEventListener("loadedmetadata", function () {
                         console.log("width:", this.videoWidth);
                         console.log("height:", this.videoHeight);
-                        scaleX = this.videoWidth * 2; 
-                        scaleY = this.videoHeight * 2;
+                        scaleX = this.videoWidth*2; 
+                        scaleY = this.videoHeight*2;
                     });
-                    main();
+                    video.play();
+                    main1();
                     } 
 
                 /**
@@ -258,10 +267,7 @@
                 function ready() {
                     conn.on('data', function (data) {
                         console.log("Data recieved");
-                        var cueString = "<span class=\"cueMsg\">Cue: </span>";
-                            addMessage("<span class=\"peerMsg\">Peer: </span>" + data);
-                           
-                    
+                                                   
                     });
                     conn.on('close', function () {
                         status.innerHTML = "Connection reset<br>Awaiting connection...";
@@ -287,29 +293,192 @@
                     
                 }
                 
-                function addMessage(msg) {
-                    var now = new Date();
-                    var h = now.getHours();
-                    var m = addZero(now.getMinutes());
-                    var s = addZero(now.getSeconds());
 
-                    if (h > 12)
-                        h -= 12;
-                    else if (h === 0)
-                        h = 12;
-
-                    function addZero(t) {
-                        if (t < 10)
-                            t = "0" + t;
-                        return t;
-                    };
-
-                    message.innerHTML = "<br><span class=\"msg-time\">" + h + ":" + m + ":" + s + "</span>  -  " + msg + message.innerHTML;
-                }
 
 
                 initialize();
-            })();
+
+                
+ 
+   
+            let videoWidth, videoHeight, rafID, ctx, canvas, ANCHOR_POINTS,
+                scatterGLHasInitialized = false, scatterGL, fingerLookupIndices = {
+                thumb: [0, 1, 2, 3, 4],
+                indexFinger: [0, 5, 6, 7, 8],
+                middleFinger: [0, 9, 10, 11, 12],
+                ringFinger: [0, 13, 14, 15, 16],
+                pinky: [0, 17, 18, 19, 20]
+                };  // for rendering each finger as a polyline
+            
+            const VIDEO_WIDTH = 640;
+            const VIDEO_HEIGHT = 500;
+            
+            // Don't render the point cloud on mobile in order to maximize performance and
+            // to avoid crowding limited screen space.
+            
+            
+            const state = {
+            backend: 'webgl'
+            };
+            
+
+            
+
+            
+            function setupDatGui() {
+            const gui = new dat.GUI();
+            gui.add(state, 'backend', ['webgl', 'wasm'])
+                .onChange(async backend => {
+                    window.cancelAnimationFrame(rafID);
+                    await tf.setBackend(backend);
+                    await addFlagLabels();
+                    landmarksRealTime(video);
+                });
+            
+
+            }
+            
+            function drawPoint(y, x, r) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, 2 * Math.PI);
+            ctx.fill();
+            }
+            
+            function drawKeypoints(keypoints) {
+            const keypointsArray = keypoints;
+            
+            for (let i = 0; i < keypointsArray.length; i++) {
+                const y = keypointsArray[i][0];
+                const x = keypointsArray[i][1];
+                drawPoint(x - 2, y - 2, 3);
+            }
+            
+            const fingers = Object.keys(fingerLookupIndices);
+            for (let i = 0; i < fingers.length; i++) {
+                const finger = fingers[i];
+                const points = fingerLookupIndices[finger].map(idx => keypoints[idx]);
+                drawPath(points, false);
+            }
+            }
+            
+            function drawPath(points, closePath) {
+            const region = new Path2D();
+            region.moveTo(points[0][0], points[0][1]);
+            for (let i = 1; i < points.length; i++) {
+                const point = points[i];
+                region.lineTo(point[0], point[1]);
+            }
+            
+            if (closePath) {
+                region.closePath();
+            }
+            ctx.stroke(region);
+            }
+            
+            let model;
+            
+            
+            async function addFlagLabels() {
+            if(!document.querySelector("#simd_supported")) {
+                const simdSupportLabel = document.createElement("div");
+                simdSupportLabel.id = "simd_supported";
+                simdSupportLabel.style = "font-weight: bold";
+                const simdSupported = await tf.env().getAsync('WASM_HAS_SIMD_SUPPORT');
+                simdSupportLabel.innerHTML = `SIMD supported: <span class=${simdSupported}>${simdSupported}<span>`;
+                document.querySelector("#info").appendChild(simdSupportLabel);
+            }
+            
+            if(!document.querySelector("#threads_supported")) {
+                const threadSupportLabel = document.createElement("div");
+                threadSupportLabel.id = "threads_supported";
+                threadSupportLabel.style = "font-weight: bold";
+                const threadsSupported = await tf.env().getAsync('WASM_HAS_MULTITHREAD_SUPPORT');
+                threadSupportLabel.innerHTML = `Threads supported: <span class=${threadsSupported}>${threadsSupported}</span>`;
+                document.querySelector("#info").appendChild(threadSupportLabel);
+            }
+            }
+            async function main1() {
+            await tf.setBackend(state.backend);
+            if (!tf.env().getAsync('WASM_HAS_SIMD_SUPPORT') && state.backend == "wasm") {
+                console.warn("The backend is set to WebAssembly and SIMD support is turned off.\nThis could bottleneck your performance greatly, thus to prevent this enable SIMD Support in chrome://flags");
+            }
+            model = await handpose.load();
+            
+            setupDatGui();
+            
+            videoWidth = video.videoWidth;
+            videoHeight = video.videoHeight;
+            
+            canvas = document.getElementById('output');
+            canvas.width = videoWidth;
+            canvas.height = videoHeight;
+            video.width = videoWidth;
+            video.height = videoHeight;
+            
+            ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, videoWidth, videoHeight);
+            ctx.strokeStyle = 'red';
+            ctx.fillStyle = 'red';
+            
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            
+            // These anchor points allow the hand pointcloud to resize according to its
+            // position in the input.
+            ANCHOR_POINTS = [
+                [0, 0, 0], [0, -VIDEO_HEIGHT, 0], [-VIDEO_WIDTH, 0, 0],
+                [-VIDEO_WIDTH, -VIDEO_HEIGHT, 0]
+            ];
+            
+            
+            landmarksRealTime(video);
+            }
+            
+            const landmarksRealTime = async (video) => {
+            async function frameLandmarks() {
+                stats.begin();
+                ctx.drawImage(
+                    video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width,
+                    canvas.height);
+                const predictions = await model.estimateHands(video);
+                if (predictions.length > 0) {
+                const result = predictions[0].landmarks;
+                drawKeypoints(result, predictions[0].annotations);
+            
+               
+            
+                    const dataset =
+                        new ScatterGL.Dataset([...pointsData, ...ANCHOR_POINTS]);
+            
+                    if (!scatterGLHasInitialized) {
+                    scatterGL.render(dataset);
+            
+                    const fingers = Object.keys(fingerLookupIndices);
+            
+                    scatterGL.setSequences(
+                        fingers.map(finger => ({indices: fingerLookupIndices[finger]})));
+                    scatterGL.setPointColorer((index) => {
+                        if (index < pointsData.length) {
+                        return 'steelblue';
+                        }
+                        return 'white';  // Hide.
+                    });
+                    } else {
+                    scatterGL.updateDataset(dataset);
+                    }
+                    scatterGLHasInitialized = true;
+                }
+                
+                stats.end();
+                rafID = requestAnimationFrame(frameLandmarks);
+            };
+            
+            frameLandmarks();
+            };
+            
+
+            
+           // main();
         </script>
     </body>
 </html>
