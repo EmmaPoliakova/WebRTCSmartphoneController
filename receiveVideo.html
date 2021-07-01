@@ -37,22 +37,25 @@
             
         </table>
 
-        <center>
+        <centre> 
         <div id="qrbox" class="modal">
 
             <div class="modal-content">
                 <p> Scan the qr code to connect your device.</p>
                 <div id="qrcode"></div>
+                
             
             </div>
           
           </div>
-        </center>
+        </centre>
+
+        
           
 
         
         <div id="canvas-wrapper">
-            <canvas id="output" style=""></canvas>
+            <canvas id="output" ></canvas>
             <video id="video" playsinline style="
             -webkit-transform: scaleX(-1);
             transform: scaleX(-1);
@@ -86,19 +89,19 @@
                 var popupBox = document.getElementById("qrbox");
                 var span = document.getElementsByClassName("close")[0];
                                 
-                const videoElement = document.getElementsByClassName('output_video')[0];
+                const videoElement = document.getElementById('video');
                 var canvas1=document.getElementById("myCanvas");
                 canvas1.setAttribute('width', window.innerWidth);
                 canvas1.setAttribute('height', window.innerHeight);
                 ctx1 = canvas1.getContext("2d");
 
-                var video; 
+                var video = videoElement;
     
                 var scaleX = 0, 
                     scaleY = 0                
 
-                var targetX = 0,
-                targetY = 0,
+                var targetX = 10,
+                targetY = 10,
                 x = 10,
                 y = 10,
                 velX = 0,
@@ -108,27 +111,28 @@
                 //let model; 
 
                 function update(){
-                    var tx = targetX - x,
-                        ty = targetY - y,
-                        dist = Math.sqrt(tx*tx+ty*ty),
-                        rad = Math.atan2(ty,tx),
-                        angle = rad/Math.PI * 180;
+                    if(Math.abs(targetX - x) > 2 && Math.abs(targetY - y) > 2){
+                        var tx = targetX - x,
+                            ty = targetY - y,
+                            dist = Math.sqrt(tx*tx+ty*ty);
 
-                        velX = (tx/dist)*speed,
-                        velY = (ty/dist)*speed;
+                            velX = Math.round((tx/dist)*speed),
+                            velY = Math.round((ty/dist)*speed);
 
-                        x += velX
-                        y += velY
+                            x += velX;
+                            y += velY;
+                            
+                    }
 
-                        ctx.clearRect(0,0,canvas.width,canvas.height);
-                        ctx.beginPath();
-                        ctx.arc(x,y,20,0,Math.PI*2);
-                        ctx.fill();
+                        ctx1.clearRect(0,0,canvas1.width,canvas1.height);
+                        ctx1.beginPath();
+                        ctx1.arc(x,y,20,0,Math.PI*2);
+                        ctx1.fill();
 
-                    //setTimeout(update,2);
+                    setTimeout(update,10);
                 }
 
-               // update();
+               update();
                 
 
 
@@ -147,12 +151,12 @@
                             framePerSecond(currentTime.getTime());
                             if (predictions.length > 0) {
                             const result = predictions[0].annotations; 
-                            //console.log(result["indexFinger"][0][0]);
+                            console.log(result["indexFinger"][0][0]);
                             var resultX = (result["indexFinger"][0][0] / scaleX) * canvas.width;
                             var resultY = (result["indexFinger"][0][1] / scaleY) * canvas.height; 
                             if (Math.abs(targetX - resultX)>2 && Math.abs(targetY - resultY)>2){
-                            targetX = resultX;
-                            targetY = resultY; 
+                            targetX = Math.round(resultX);
+                            targetY = Math.round(resultY); 
                             }
                             //console.log(targetX);
                             //console.log(targetY); 
@@ -247,17 +251,17 @@
 
 
                 function setRemoteStream(stream){
-
-                    video = videoElement;
+                    //var video = videoElement;
                     video.srcObject = stream;
+                    video.play();
                     video.addEventListener("loadedmetadata", function () {
-                        console.log("width:", this.videoWidth);
-                        console.log("height:", this.videoHeight);
                         scaleX = this.videoWidth*2; 
                         scaleY = this.videoHeight*2;
+                        
+                        main();
                     });
-                    video.play();
-                    main1();
+                    
+                    
                     } 
 
                 /**
@@ -294,8 +298,6 @@
                 }
                 
 
-
-
                 initialize();
 
                 
@@ -322,9 +324,6 @@
             };
             
 
-            
-
-            
             function setupDatGui() {
             const gui = new dat.GUI();
             gui.add(state, 'backend', ['webgl', 'wasm'])
@@ -430,13 +429,14 @@
                 [-VIDEO_WIDTH, -VIDEO_HEIGHT, 0]
             ];
             
+  
             
             landmarksRealTime(video);
             }
             
             const landmarksRealTime = async (video) => {
             async function frameLandmarks() {
-                stats.begin();
+               
                 ctx.drawImage(
                     video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width,
                     canvas.height);
@@ -447,29 +447,14 @@
             
                
             
-                    const dataset =
-                        new ScatterGL.Dataset([...pointsData, ...ANCHOR_POINTS]);
-            
-                    if (!scatterGLHasInitialized) {
-                    scatterGL.render(dataset);
+                                     
             
                     const fingers = Object.keys(fingerLookupIndices);
             
-                    scatterGL.setSequences(
-                        fingers.map(finger => ({indices: fingerLookupIndices[finger]})));
-                    scatterGL.setPointColorer((index) => {
-                        if (index < pointsData.length) {
-                        return 'steelblue';
-                        }
-                        return 'white';  // Hide.
-                    });
-                    } else {
-                    scatterGL.updateDataset(dataset);
-                    }
-                    scatterGLHasInitialized = true;
+       
                 }
                 
-                stats.end();
+                
                 rafID = requestAnimationFrame(frameLandmarks);
             };
             

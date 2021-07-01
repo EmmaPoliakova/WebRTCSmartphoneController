@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" href="style.css">
         <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.min.js"></script>
         
 
     </head>
@@ -32,7 +33,7 @@
 
 
 
-
+            
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
         <script type="text/javascript">
 
@@ -75,6 +76,9 @@
 
             var fps = document.getElementById("framesPerSecond");
 
+            //kalman filter 
+            var kalmanFilter = new KalmanFilter({R: 0.01, Q: 20});
+
 
             // ball animation
             function update(){
@@ -82,17 +86,18 @@
                 ctx.clearRect(0,0,canvas.width,canvas.height);
 
                 for (var j = 0; j<fingers; j++){
-                    var tx = targetX[j] - x[j],
-                        ty = targetY[j] - y[j],
-                        dist = Math.sqrt(tx*tx+ty*ty),
-                        rad = Math.atan2(ty,tx),
-                        angle = rad/Math.PI * 180;
+                    if(Math.abs(targetX[j] - x[j]) > 2 && Math.abs(targetY[j] - y[j]) > 2){
+                        var tx = targetX[j] - x[j],
+                            ty = targetY[j] - y[j],
+                            dist = Math.sqrt(tx*tx+ty*ty);
 
-                        velX[j] = (tx/dist)*speed,
-                        velY[j] = (ty/dist)*speed;
+                            velX[j] = Math.round((tx/dist)*speed),
+                            velY[j] = Math.round((ty/dist)*speed);
 
-                        x[j] += velX[j]
-                        y[j] += velY[j]
+                            x[j] += velX[j];
+                            y[j] += velY[j];
+                            
+                    }
 
                         
                         ctx.beginPath();
@@ -100,6 +105,7 @@
                         ctx.arc(x[j],y[j],20,0,Math.PI*2);
                         ctx.fill();
                 }
+
 
                 setTimeout(update,10);
             }     
@@ -195,8 +201,17 @@
                     fingers = coordinates.length;
 
                     for (var i=0; i < coordinates.length; i++) {
-                        targetX[i] = coordinates[i][0]*canvas.width;
-                        targetY[i] = coordinates[i][1]*canvas.height;
+                        console.log(coordinates[i][0]*canvas.width);
+                        console.log(coordinates[i][1]*canvas.height);
+
+                        //targetX[i] = kalmanFilter.filter(coordinates[i][0]*canvas.width);
+                        //targetY[i] = kalmanFilter.filter(coordinates[i][1]*canvas.height);
+
+                        targetX[i] = Math.round(coordinates[i][0]*canvas.width);
+                        targetY[i] = Math.round(coordinates[i][1]*canvas.height);
+
+                        console.log(targetX[i]);
+                        console.log(targetY[i]);
                         //ctx.beginPath();
                         //ctx.arc(coordinates[i][0],coordinates[i][1],20,0,Math.PI*2);
                         //ctx.fillStyle = colours[i];
@@ -213,7 +228,7 @@
                         frames += 1;
                     }
                     else {
-                        fps.innerHTML = frames;
+                        fps.innerHTML = "FPS: " + frames;
                         frames = 1;
                         prevTime = currentTime;
                         
