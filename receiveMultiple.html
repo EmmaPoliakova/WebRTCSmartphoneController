@@ -8,13 +8,12 @@
     </head>
     <body>
 
-        <div id="framesPerSecond" class="fps"></div>
-
-
         <center>
         <div id="qrbox" class="modal">
             <div class="modal-content">
+                <p > Scan a QRcode to connect your device </p>
                 <div class="wrap">
+
 
                     <div class="fleft">
                         <div id="qrcode1"></div>
@@ -31,8 +30,7 @@
         </center>
         
             
-
-        <canvas id="drawingCanvas"  style="border:1px solid #000000;"></canvas>
+        <canvas id="drawingCanvas" style="border:1px solid #000000;"></canvas>
 
             
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
@@ -40,6 +38,8 @@
 
             var canvas=document.getElementById("drawingCanvas"),
             ctx = canvas.getContext("2d");
+            canvas.width  = window.innerWidth;
+            canvas.height = window.innerHeight;
         
 
             //pup up window with QR
@@ -47,12 +47,12 @@
             //var qr2 = document.getElementById("qrbox2");
          
 
-            var colours = ["green", "blue", "red", "yellow", "orange"];
+            var colours = ["red", "yellow", "orange",  "green", "blue"];
             var fingers = 0;
 
             // Array of remote peers ID and data channel
-            var remotePeerIds=[],// You need this to link with specific DOM element
-            connections=[]; // This is where you manage multi-connections
+            var remotePeerIds=[],
+            connections=[]; 
 
             // count frames variables
             var frames = 0;
@@ -74,20 +74,11 @@
             qr.style.display = "block";
             
             });
-
-
-            // Start connection with other peer - and handle it
-            function getConnect(remotePeerId){
-                var conn = peer.connect(remotePeerId);
-                handleConnection(conn);
-            };
-
-            // Ok now you need to handle the received connection too
+  
             peer.on('connection',function(conn){
                 handleConnection(conn);
             });
 
-            // Handle connection - this is most important part
             function handleConnection(conn){
     
                 remotePeerIds.push(conn.peer); // Add remote peer to list
@@ -100,15 +91,13 @@
                     }
 
                     if (remotePeerIds.length==2){
-                        //document.getElementById("qrcode2").style.display = "none";
                         qr.style.display = "none";
+                
                     }
                     
 
                     conn.on('data',function(data){
-                    // You can do whatever you want with the data from this connection - this is also the main part
                         processCoordinates(data, remotePeerIds.indexOf(conn.peer));
-                   
                     });
                     conn.on('error',function(){
                     // handle error  
@@ -123,25 +112,22 @@
                 });
                 
             };
+
+
+            function ready() {
+                for (var conn in connections){
+                conn.on('data', function (data) {               
+                    processCoordinates(data, remotePeerIds.indexOf(conn.peer));
+
+                });
+                conn.on('close', function () {
+                    status.innerHTML = "Connection reset<br>Awaiting connection...";
+                    conn = null;
+                });
+                
+            }
+        }
             
-
-            // So now you have multi-connections. If you want to send a message to all other peer, just using for loop with all the connections
-            function broadcastMessage(message){
-                for(var i=0;i<connections.length;i++){
-                    connections[i].send(message);
-                }
-            }
-
-            // Or if you want to send a message to a specific peer - you need to know his peerid
-
-            function privateMessage(remotePeerId,message){
-            for(var i=0;i<connections.length;i++){
-                    if(connections[i].peer==remotePeerId){
-                    connections[i].send(message);
-                    break;
-                    }
-                }
-            }
 
             function processCoordinates(data, colour) {
             
@@ -153,11 +139,11 @@
             for (var i=0; i < coordinates.length; i++) {
                 ctx.beginPath();
                 ctx.fillStyle = colours[colour];
-                ctx.arc(coordinates[i][0]*canvas.width,coordinates[i][1]*canvas.height,5,0,Math.PI*2);
+                ctx.arc(coordinates[i][0]*canvas.width,coordinates[i][1]*canvas.height,10,0,Math.PI*2);
                 ctx.fill();
             }
 
-            framePerSecond(currentTime.getTime());
+            //framePerSecond(currentTime.getTime());
         }
 
 
