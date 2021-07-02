@@ -77,7 +77,8 @@
             var fps = document.getElementById("framesPerSecond");
 
             //kalman filter 
-            var kalmanFilter = new KalmanFilter({R: 0.01, Q: 20});
+            var kalmanFilter = new KalmanFilter({R: 0.01, Q: 1});
+            var kalmanFilter1 = new KalmanFilter({R: 0.01, Q: 1});
 
 
             // ball animation
@@ -204,8 +205,8 @@
                         console.log(coordinates[i][0]*canvas.width);
                         console.log(coordinates[i][1]*canvas.height);
 
-                        //targetX[i] = kalmanFilter.filter(coordinates[i][0]*canvas.width);
-                        //targetY[i] = kalmanFilter.filter(coordinates[i][1]*canvas.height);
+                        console.log(kalmanFilter.filter(coordinates[i][0]*canvas.width));
+                        console.log(kalmanFilter1.filter(coordinates[i][1]*canvas.height));
 
                         targetX[i] = Math.round(coordinates[i][0]*canvas.width);
                         targetY[i] = Math.round(coordinates[i][1]*canvas.height);

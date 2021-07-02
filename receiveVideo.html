@@ -34,6 +34,27 @@
                 <td><div id="status" class="status"></div></td>
                 <td><div id="framesPerSecond" class="fps"></div></td>
             </tr>
+
+            <tr>
+                <td>
+                    <canvas id="myCanvas"  style="border:1px solid #000000;"></canvas>
+                </td>
+                <td>
+                    <div id="canvas-wrapper">
+                        <canvas id="output" ></canvas>
+                        <video id="video" playsinline style="
+                        -webkit-transform: scaleX(-1);
+                        transform: scaleX(-1);
+                        visibility: hidden;
+                        width: auto;
+                        height: auto;
+                        position: absolute;
+                        ">
+                        </video>
+                      </div>
+            
+                </td>
+            </tr>
             
         </table>
 
@@ -54,22 +75,10 @@
           
 
         
-        <div id="canvas-wrapper">
-            <canvas id="output" ></canvas>
-            <video id="video" playsinline style="
-            -webkit-transform: scaleX(-1);
-            transform: scaleX(-1);
-            visibility: hidden;
-            width: auto;
-            height: auto;
-            position: absolute;
-            ">
-            </video>
-          </div>
-
+       
           <div id="scatter-gl-container"></div>
 
-        <canvas id="myCanvas"  style="border:1px solid #000000;"></canvas>
+       
 
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script> 
@@ -91,8 +100,8 @@
                                 
                 const videoElement = document.getElementById('video');
                 var canvas1=document.getElementById("myCanvas");
-                canvas1.setAttribute('width', window.innerWidth);
-                canvas1.setAttribute('height', window.innerHeight);
+                canvas1.setAttribute('width', 1000);
+                canvas1.setAttribute('height', 500);
                 ctx1 = canvas1.getContext("2d");
 
                 var video = videoElement;
@@ -253,12 +262,12 @@
                 function setRemoteStream(stream){
                     //var video = videoElement;
                     video.srcObject = stream;
-                    video.play();
+
                     video.addEventListener("loadedmetadata", function () {
-                        scaleX = this.videoWidth*2; 
-                        scaleY = this.videoHeight*2;
-                        
-                        main();
+                        scaleX = this.videoWidth; 
+                        scaleY = this.videoHeight;
+                        video.play();                        
+                        main1();
                     });
                     
                     
@@ -323,19 +332,6 @@
             backend: 'webgl'
             };
             
-
-            function setupDatGui() {
-            const gui = new dat.GUI();
-            gui.add(state, 'backend', ['webgl', 'wasm'])
-                .onChange(async backend => {
-                    window.cancelAnimationFrame(rafID);
-                    await tf.setBackend(backend);
-                    await addFlagLabels();
-                    landmarksRealTime(video);
-                });
-            
-
-            }
             
             function drawPoint(y, x, r) {
             ctx.beginPath();
@@ -403,8 +399,7 @@
             }
             model = await handpose.load();
             
-            setupDatGui();
-            
+          
             videoWidth = video.videoWidth;
             videoHeight = video.videoHeight;
             
@@ -442,8 +437,16 @@
                     canvas.height);
                 const predictions = await model.estimateHands(video);
                 if (predictions.length > 0) {
-                const result = predictions[0].landmarks;
-                drawKeypoints(result, predictions[0].annotations);
+                    const results = predictions[0].annotations; 
+                            console.log(results["indexFinger"][0][0]);
+                            var resultX = (results["indexFinger"][0][0] / scaleX) * canvas.width;
+                            var resultY = (results["indexFinger"][0][1] / scaleY) * canvas.height; 
+                            if (Math.abs(targetX - resultX)>2 && Math.abs(targetY - resultY)>2){
+                            targetX = Math.round(resultX);
+                            targetY = Math.round(resultY); 
+                            }
+                    const result = predictions[0].landmarks;
+                    drawKeypoints(result, predictions[0].annotations);
             
                
             
