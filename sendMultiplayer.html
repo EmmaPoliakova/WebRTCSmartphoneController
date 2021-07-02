@@ -15,7 +15,7 @@
         
 
          <div class="container">
-             <canvas class="input_canvas" style="border:1px solid #000000; background-color: rgb(164, 206, 192);"></canvas>
+             <canvas class="input_canvas" style="background-color: rgb(164, 206, 192);"></canvas>
                           
          </div>
 
@@ -39,8 +39,8 @@
                 // peer id from url variables
                 const queryString = window.location.search;             
                 const urlParams = new URLSearchParams(queryString);
-                const id = urlParams.get('id')
-     
+                const id = urlParams.get('id');
+                const qrID = urlParams.get('qr');
 
 
                 // touch input canvas varaibles
@@ -172,10 +172,11 @@
                     conn.on('open', function () {
                         status.innerHTML = "Connected to: " + conn.peer;
                         console.log("Connected to: " + conn.peer);
+                        conn.send(qrID);
                     });
                     // Handle incoming data (messages only since this is the signal sender)
                     conn.on('data', function (data) {
-                        addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+                        
                     });
                     conn.on('close', function () {
                         status.innerHTML = "Connection closed";

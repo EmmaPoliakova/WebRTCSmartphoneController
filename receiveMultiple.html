@@ -30,7 +30,7 @@
         </center>
         
             
-        <canvas id="drawingCanvas" style="border:1px solid #000000;"></canvas>
+        <canvas id="drawingCanvas"></canvas>
 
             
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
@@ -69,8 +69,8 @@
             // Get your local peer id
             peer.on('open', function(id) {
             console.log('My peer ID is: ' + id);
-            new QRCode(document.getElementById("qrcode1"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendMultiplayer.html?id=" + peer.id);
-            new QRCode(document.getElementById("qrcode2"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendMultiplayer.html?id=" + peer.id);
+            new QRCode(document.getElementById("qrcode1"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendMultiplayer.html?id=" + peer.id+ "&qr=1");
+            new QRCode(document.getElementById("qrcode2"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendMultiplayer.html?id=" + peer.id + "&qr=2");
             qr.style.display = "block";
             
             });
@@ -86,18 +86,21 @@
                 conn.on('open', function() {
                     console.log("Connected with peer: "+ conn.peer);
 
-                    if (remotePeerIds.length==1){
-                        document.getElementById("qrcode1").style.display = "none";
-                    }
-
                     if (remotePeerIds.length==2){
-                        qr.style.display = "none";
-                
+                        qr.style.display = "none";        
                     }
                     
 
                     conn.on('data',function(data){
-                        processCoordinates(data, remotePeerIds.indexOf(conn.peer));
+                        if (data =="1"){
+                            document.getElementById("qrcode1").style.display = "none";
+                        }
+                        else if( data=="2"){
+                            document.getElementById("qrcode2").style.display = "none";
+                        }
+                        else if (remotePeerIds.length==2){
+                            processCoordinates(data, remotePeerIds.indexOf(conn.peer));
+                        }
                     });
                     conn.on('error',function(){
                     // handle error  
