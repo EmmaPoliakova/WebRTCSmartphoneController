@@ -1,93 +1,24 @@
-* { margin:0; padding:0; }
-
-html, body { width:100%; height:100%; }
-
-h1 {
-    font-size: 1.75em;
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
-h2 {
-    text-align: center;
-    font-size: 4em;
-}
-
-td {
-    width: 50%;
-}
-
-input {
-	margin-bottom: 5px;
-}
-
-a:visited{
-	color: blue;
-}
-
-.display {
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    max-height: 100%;
+    float: left;
     width: 100%;
-    min-height: 400px;
-    padding-bottom: 20px;
 }
 
-.control {
+canvas {
+    background-color: rgb(76, 169, 212);
     width: 100%;
-    padding-bottom: 20px;
-}
-
-.control-button {
-    width: 100%;
-    min-height: 50px;
-}
-
-.display-box {
-    border: 2px solid black;
-}
-
-.title {
-    vertical-align: top;
-}
-
-.standby {
-    background-color: red;
-}
-
-.go {
-    background-color: green;
-}
-
-.fade {
-    background-color: yellow;
-}
-
-.off {
-    background-color: gray;
-}
-
-.hidden {
-    visibility: hidden;
-}
-
-.no-display {
-    display: none;
-}
-
-.status {
-    height: 125px;
-    vertical-align: text-top;
-    font-weight: bold;
-    margin-bottom: 10px;
-    border-bottom: 2px solid black;
-
-}
-
-.message {
-    height: 125px;
-    max-height: 125px;
-    margin-bottom: 10px;
-    border-bottom: 2px solid black;
-    overflow: auto;
-}
-
+    height: 100%;
+    display: block;
+  }
 
 
 .modal {
@@ -106,9 +37,26 @@ a:visited{
 
 /* Modal Content */
 .modal-content {
-    background-color: #d3d4d4c4;
     margin: auto;
     padding: 20px;
-    border: 1px solid #888;
-    width: 20%;
+    width: auto;
     }
+
+    .wrap {
+        width: 100%;
+        overflow:auo;
+        }
+        
+        .fleft {
+            float:left; 
+            width: 50%;
+
+            height: 400px;
+        }
+        
+        .fright {
+        float: right;
+
+            height: 400px;
+            width: 50%;
+        }
