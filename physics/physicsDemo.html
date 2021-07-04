@@ -81,6 +81,8 @@
             options: {
                 width: 800,
                 height: 600,
+                wireframes: false,
+                background: '#e7e4f4',  
                 showAxes: true,
                 showCollisions: true,
                 showConvexHulls: true
@@ -194,9 +196,9 @@
                         case "select":
                             findClosest(data[1]);
                         case "move":
-                            if (selected!=null){
+                            //if (selected!=null){
                             processCoordinates(data[1]);
-                            }
+                            //}
                         case "drop":
                             selected = null;
                             selectedBody = null;
