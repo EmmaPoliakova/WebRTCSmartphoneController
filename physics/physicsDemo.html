@@ -85,10 +85,7 @@
                 background: '#e7e4f4',  
                 showAxes: true,
                 showCollisions: true,
-                showConvexHulls: true,
-                gravity: {
-                scale: 0.0001
-            },
+                showConvexHulls: true
             }
         });
 
@@ -100,7 +97,7 @@
         var allBodies = [];
         // add bodies
         for (var i=0; i<5; i++){
-            var body = Bodies.rectangle(100+i*50, 200+i*50, 50+i*10, 50+i*10, {render: { fillStyle: '#060a19' } });
+            var body = Bodies.rectangle(100+i*50, 200+i*50, 50+i*10, 50+i*10, { render: { fillStyle: '#060a19' } });
             Composite.add(world, [body]);
             allBodies.push([[body.position.x,body.position.y],body]);
 
@@ -203,6 +200,7 @@
                             //selected = null;
                             //selectedBody = null;
                             setPositions(); 
+                            selectedBody.isStatic = false;
                     }             
                     
 
@@ -233,7 +231,8 @@
                     }
                     selected = allBodies.indexOf(prev);
                     selectedBody = prev[1];
-
+                    selectedBody.isStatic = true;
+                    console.log(selectedBody.isStatic);
                 }
 
                 function processCoordinates(coordinates) {
