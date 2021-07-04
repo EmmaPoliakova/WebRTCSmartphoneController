@@ -138,8 +138,8 @@
                     console.log('ID: ' + peer.id);
                     recvId.innerHTML = "ID: " + peer.id;
                     status.innerHTML = "Awaiting connection...";
-                    new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendScreen.html?id=" + peer.id);
-                    //popupBox.style.display = "block";
+                    new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendScreenPhysics.html?id=" + peer.id);
+                    popupBox.style.display = "block";
                 });
 
                 peer.on('connection', function (c) {
