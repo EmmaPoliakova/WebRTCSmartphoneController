@@ -140,7 +140,7 @@
                     console.log('ID: ' + peer.id);
                     recvId.innerHTML = "ID: " + peer.id;
                     status.innerHTML = "Awaiting connection...";
-                    new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendScreenPhysics.html?id=" + peer.id);
+                    new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/sendScreenPhysics.html?id=" + peer.id);
                     popupBox.style.display = "block";
                 });
 
@@ -240,10 +240,15 @@
                 function processCoordinates(coordinates) {
 
                     var currentTime = new Date();  
-                    console.log(Math.round(coordinates[0][0])*800);
-                    console.log(Math.round(coordinates[0][1])*600);
 
-                    Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0])*800, y: Math.round(coordinates[0][1])*600 });
+                    console.log(coordinates);
+                    console.log(Math.round(coordinates[0]));
+                    console.log(Math.round(coordinates[0][1]));
+
+                    console.log(Math.round(coordinates[0][0]*800));
+                    console.log(Math.round(coordinates[0][1]*600));
+
+                    Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
 
                     framePerSecond(currentTime.getTime());
                 }
