@@ -191,17 +191,22 @@
             
             function ready() {
                 conn.on('data', function (data) {
+                    console.log(data[0]);
                     switch(data[0]) {
                         case "select":
                             findClosest(data[1]);
+                            break;
                         case "move":
+                            //selectedBody.ignoreGravity = true;
                             processCoordinates(data[1]);
+                            break;
                         case "drop":
-                            //selected = null;
-                            //selectedBody = null;
-                            setPositions(); 
-                            body.ignoreGravity = false;
-                            console.log( body.ignoreGravity);
+                            setPositions();
+                            //selectedBody.ignoreGravity = false;
+                            selectedBody.isStatic = false;
+                            break; 
+
+
                     }             
                     
 
@@ -232,8 +237,8 @@
                     }
                     selected = allBodies.indexOf(prev);
                     selectedBody = prev[1];
-                    body.ignoreGravity = true;
-                    console.log( body.ignoreGravity);
+                    //selectedBody.ignoreGravity = true;
+                    selectedBody.isStatic = true;
                 }
 
                 function processCoordinates(coordinates) {
