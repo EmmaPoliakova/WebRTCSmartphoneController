@@ -247,8 +247,9 @@
 
                     console.log(Math.round(coordinates[0][0]*800));
                     console.log(Math.round(coordinates[0][1]*600));
-
-                    Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
+                    if (selectedBody!=null){
+                        Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
+                    }
 
                     framePerSecond(currentTime.getTime());
                 }
