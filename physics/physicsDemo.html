@@ -85,7 +85,10 @@
                 background: '#e7e4f4',  
                 showAxes: true,
                 showCollisions: true,
-                showConvexHulls: true
+                showConvexHulls: true,
+                gravity: {
+                scale: 0.0001
+            },
             }
         });
 
@@ -97,7 +100,7 @@
         var allBodies = [];
         // add bodies
         for (var i=0; i<5; i++){
-            var body = Bodies.rectangle(100+i*50, 200+i*50, 50+i*10, 50+i*10, { render: { fillStyle: '#060a19' } });
+            var body = Bodies.rectangle(100+i*50, 200+i*50, 50+i*10, 50+i*10, {render: { fillStyle: '#060a19' } });
             Composite.add(world, [body]);
             allBodies.push([[body.position.x,body.position.y],body]);
 
@@ -191,14 +194,11 @@
             
             function ready() {
                 conn.on('data', function (data) {
-                    console.log(data[0]);
                     switch(data[0]) {
                         case "select":
                             findClosest(data[1]);
                         case "move":
-                            //if (selected!=null){
                             processCoordinates(data[1]);
-                            //}
                         case "drop":
                             //selected = null;
                             //selectedBody = null;
@@ -233,20 +233,12 @@
                     }
                     selected = allBodies.indexOf(prev);
                     selectedBody = prev[1];
-                    console.log(selected);
-                    console.log(selectedBody);
+
                 }
 
                 function processCoordinates(coordinates) {
 
                     var currentTime = new Date();  
-
-                    console.log(coordinates);
-                    console.log(Math.round(coordinates[0]));
-                    console.log(Math.round(coordinates[0][1]));
-
-                    console.log(Math.round(coordinates[0][0]*800));
-                    console.log(Math.round(coordinates[0][1]*600));
                     if (selectedBody!=null){
                         Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
                     }
