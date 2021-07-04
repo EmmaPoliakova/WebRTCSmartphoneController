@@ -200,7 +200,8 @@
                             //selected = null;
                             //selectedBody = null;
                             setPositions(); 
-                            selectedBody.isStatic = false;
+                            body.ignoreGravity = false;
+                            console.log( body.ignoreGravity);
                     }             
                     
 
@@ -231,8 +232,8 @@
                     }
                     selected = allBodies.indexOf(prev);
                     selectedBody = prev[1];
-                    selectedBody.isStatic = true;
-                    console.log(selectedBody.isStatic);
+                    body.ignoreGravity = true;
+                    console.log( body.ignoreGravity);
                 }
 
                 function processCoordinates(coordinates) {
