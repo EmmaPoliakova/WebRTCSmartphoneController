@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="style.css">
         <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
-        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
 
     </head>
     <body>
@@ -15,7 +15,7 @@
                 <div id="receiver-id" style="font-weight: bold;" title="Copy this ID to the input on send.html.">ID:</div>
                 <div id="status" class="status"></div>
                 <div id="framesPerSecond" class="fps"></div>
-
+                <div id="stats" style='float: right;'></div>
 
         <center>
             <div id="qrbox" class="modal">
@@ -69,6 +69,10 @@
             Events = Matter.Events,
             Composite = Matter.Composite,
             Bodies = Matter.Bodies;
+
+            var stats = new Stats();
+			stats.showPanel(0);
+			document.getElementById('stats').appendChild(stats.domElement)
 
         // create engine
         var engine = Engine.create(),
@@ -191,24 +195,26 @@
             
             function ready() {
                 conn.on('data', function (data) {
+                 
                     console.log(data[0]);
                     switch(data[0]) {
                         case "select":
                             findClosest(data[1]);
+                            //processCoordinates(data[1]);
                             break;
                         case "move":
-                            //selectedBody.ignoreGravity = true;
+                            
                             processCoordinates(data[1]);
                             break;
                         case "drop":
                             setPositions();
-                            //selectedBody.ignoreGravity = false;
+                            
                             selectedBody.isStatic = false;
                             break; 
-
-
                     }             
                     
+                  
+
 
                 });
                 conn.on('close', function () {
@@ -237,18 +243,20 @@
                     }
                     selected = allBodies.indexOf(prev);
                     selectedBody = prev[1];
-                    //selectedBody.ignoreGravity = true;
                     selectedBody.isStatic = true;
                 }
 
                 function processCoordinates(coordinates) {
 
+                    stats.begin();
                     var currentTime = new Date();  
                     if (selectedBody!=null){
                         Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
                     }
 
                     framePerSecond(currentTime.getTime());
+                    stats.end();
+                    requestAnimationFrame(processCoordinates);
                 }
 
 

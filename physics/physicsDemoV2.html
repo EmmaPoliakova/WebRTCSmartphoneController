@@ -206,7 +206,7 @@
                         case "select":
                             conn.send(allBodiesNormalized);
                             selected = data[1];
-                            selectedBody = allBodies[selected];
+                            selectedBody = allBodies[selected][1];
                             selectedBody.isStatic = true;
                             break;
                         case "move":
