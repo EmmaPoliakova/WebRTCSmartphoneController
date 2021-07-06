@@ -14,6 +14,7 @@
         <!-- Alternatively you can use the WASM backend: <script src="https://unpkg.com/@tensorflow/tfjs-backend-wasm@2.1.0/dist/tf-backend-wasm.js"></script> -->
 
         <script src="https://unpkg.com/@tensorflow-models/handpose@0.0.6/dist/handpose.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
 
         <link rel="stylesheet" href="style.css">
 
@@ -32,7 +33,7 @@
       
             <tr>
                 <td><div id="status" class="status"></div></td>
-                <td><div id="framesPerSecond" class="fps"></div></td>
+                <div id="stats" style='float: right;'></div>
             </tr>
 
             <tr>
@@ -58,18 +59,15 @@
             
         </table>
 
-        <centre> 
+        <center> 
         <div id="qrbox" class="modal">
 
             <div class="modal-content">
                 <p> Scan the qr code to connect your device.</p>
                 <div id="qrcode"></div>
-                
-            
             </div>
-          
           </div>
-        </centre>
+        </center>
 
         
           
@@ -104,82 +102,31 @@
                 canvas1.setAttribute('height', 500);
                 ctx1 = canvas1.getContext("2d");
 
+                var stats = new Stats();
+                stats.showPanel(0);
+                document.getElementById('stats').appendChild(stats.domElement)
+
                 var video = videoElement;
     
                 var scaleX = 0, 
-                    scaleY = 0                
+                    scaleY = 0;               
 
                 var targetX = 10,
-                targetY = 10,
-                x = 10,
-                y = 10,
-                velX = 0,
-                velY = 0,
-                speed = 20;
+                targetY = 10;
+ 
 
                 //let model; 
 
                 function update(){
-                    if(Math.abs(targetX - x) > 2 && Math.abs(targetY - y) > 2){
-                        var tx = targetX - x,
-                            ty = targetY - y,
-                            dist = Math.sqrt(tx*tx+ty*ty);
-
-                            velX = Math.round((tx/dist)*speed),
-                            velY = Math.round((ty/dist)*speed);
-
-                            x += velX;
-                            y += velY;
-                            
-                    }
-
+                    
                         ctx1.clearRect(0,0,canvas1.width,canvas1.height);
                         ctx1.beginPath();
-                        ctx1.arc(x,y,20,0,Math.PI*2);
+                        ctx1.arc(targetX, targetY,20,0,Math.PI*2);
                         ctx1.fill();
-
-                    setTimeout(update,10);
+                  
                 }
 
-               update();
-                
-
-
-                async function main() {
-                    // Load the MediaPipe handpose model.
-
-                    model = await handpose.load();
-                  
-                  
-                        async function frameLandmarks() {
-                           
-                            const predictions = await model.estimateHands(videoElement);
-                            
-                            var currentTime = new Date();
-                           
-                            framePerSecond(currentTime.getTime());
-                            if (predictions.length > 0) {
-                            const result = predictions[0].annotations; 
-                            console.log(result["indexFinger"][0][0]);
-                            var resultX = (result["indexFinger"][0][0] / scaleX) * canvas.width;
-                            var resultY = (result["indexFinger"][0][1] / scaleY) * canvas.height; 
-                            if (Math.abs(targetX - resultX)>2 && Math.abs(targetY - resultY)>2){
-                            targetX = Math.round(resultX);
-                            targetY = Math.round(resultY); 
-                            }
-                            //console.log(targetX);
-                            //console.log(targetY); 
-                            update();
-                                                  
-                            }
-                            //setInterval(frameLandmarks, 5);
-                            requestAnimationFrame(frameLandmarks);
-                        };
-
-                        frameLandmarks();
-                        };
-                    
-                
+                              
 
                 var widthV = 1280;
                 var heightV = 720;
@@ -209,7 +156,7 @@
                         console.log('ID: ' + peer.id);
                         recvId.innerHTML = "ID: " + peer.id;
                         status.innerHTML = "Awaiting connection...";
-                        new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendVideo.html?id=" + peer.id);
+                        new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/handtracking/sendVideo.html?id=" + peer.id);
                         popupBox.style.display = "block";
                     });
                     peer.on('connection', function (c) {
@@ -431,7 +378,7 @@
             
             const landmarksRealTime = async (video) => {
             async function frameLandmarks() {
-               
+                stats.begin();
                 ctx.drawImage(
                     video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width,
                     canvas.height);
@@ -439,12 +386,12 @@
                 if (predictions.length > 0) {
                     const results = predictions[0].annotations; 
                             console.log(results["indexFinger"][0][0]);
-                            var resultX = (results["indexFinger"][0][0] / scaleX) * canvas.width;
-                            var resultY = (results["indexFinger"][0][1] / scaleY) * canvas.height; 
-                            if (Math.abs(targetX - resultX)>2 && Math.abs(targetY - resultY)>2){
-                            targetX = Math.round(resultX);
-                            targetY = Math.round(resultY); 
-                            }
+                            var resultX = (results["indexFinger"][0][0] / scaleX) * canvas1.width;
+                            var resultY = (results["indexFinger"][0][1] / scaleY) * canvas1.height; 
+                            targetX = canvas1.width - Math.round(resultX);
+                            targetY = Math.round(resultY);
+                            update(); 
+                            
                     const result = predictions[0].landmarks;
                     drawKeypoints(result, predictions[0].annotations);
             
@@ -453,7 +400,7 @@
                                      
             
                     const fingers = Object.keys(fingerLookupIndices);
-            
+                    stats.end();
        
                 }
                 
