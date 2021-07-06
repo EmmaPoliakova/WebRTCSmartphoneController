@@ -1,4 +1,4 @@
-Hand tracking (25/06/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/receiveVideo.html
+Hand tracking (25/06/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/handtracking/receiveVideo.html
 
 Touch screen - 1 phone (29/06/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/receiveScreen.html
 
