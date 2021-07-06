@@ -14,7 +14,6 @@
                 <td class="title">Status:</td>
                 <div id="receiver-id" style="font-weight: bold;" title="Copy this ID to the input on send.html.">ID:</div>
                 <div id="status" class="status"></div>
-                <div id="framesPerSecond" class="fps"></div>
                 <div id="stats" style='float: right;'></div>
 
         <center>
@@ -56,8 +55,6 @@
 
             var recvId = document.getElementById("receiver-id");
             var status = document.getElementById("status");
-
-            var fps = document.getElementById("framesPerSecond");
 
             var selected = null;
             var selectedBody = null;
@@ -101,15 +98,15 @@
         var allBodies = [];
         // add bodies
         for (var i=0; i<5; i++){
-            var body = Bodies.rectangle(100+i*50, 200+i*50, 50+i*10, 50+i*10, { render: { fillStyle: '#060a19' } });
+            var x = 100+i*50;
+            var y = 200+i*50;
+            var w = 50+i*10;
+            var h = 50+i*10;
+            var body = Bodies.rectangle(x, y, w, h, { render: { fillStyle: '#060a19' } });
             Composite.add(world, [body]);
             allBodies.push([[body.position.x,body.position.y],body]);
 
         }
-        //console.log(allBodies);
-
-        
-
 
 
         Composite.add(world, [
@@ -121,9 +118,6 @@
         ]);
 
             
-    
-
-
              //Create the Peer object for our end of the connection.
              
                 function initialize() {
@@ -195,26 +189,29 @@
             
             function ready() {
                 conn.on('data', function (data) {
-                 
-                    console.log(data[0]);
+                    stats.begin();
+                   
                     switch(data[0]) {
                         case "select":
                             findClosest(data[1]);
-                            //processCoordinates(data[1]);
+                           
                             break;
                         case "move":
-                            
-                            processCoordinates(data[1]);
+                            if (selectedBody!= null){
+                                processCoordinates(data[1]);
+                            }
                             break;
                         case "drop":
-                            setPositions();
-                            
-                            selectedBody.isStatic = false;
+                            if (selectedBody!= null){
+                                setPositions();
+                                selectedBody.isStatic = false;
+                                selectedBody = null;
+                            }
                             break; 
                     }             
                     
                   
-
+                stats.end();
 
                 });
                 conn.on('close', function () {
@@ -241,37 +238,21 @@
                             prev = val;
                         }
                     }
-                    selected = allBodies.indexOf(prev);
-                    selectedBody = prev[1];
-                    selectedBody.isStatic = true;
+
+                    //if (Matter.Vertices.contains(prev[1].vertices, { x: coordinates[0][0]*800, y: coordinates[0][1]*600})){
+                   
+                        selected = allBodies.indexOf(prev);
+                        selectedBody = prev[1];
+                        selectedBody.isStatic = true;
+                    //}
                 }
 
                 function processCoordinates(coordinates) {
-
-                    stats.begin();
-                    var currentTime = new Date();  
-                    if (selectedBody!=null){
-                        Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
-                    }
-
-                    framePerSecond(currentTime.getTime());
-                    stats.end();
-                    requestAnimationFrame(processCoordinates);
-                }
-
-
-                function framePerSecond(currentTime){
-                    if ((currentTime - prevTime)/1000 < 1){
-                        frames += 1;
-                    }
-                    else {
-                        fps.innerHTML = "FPS: " + frames;
-                        frames = 1;
-                        prevTime = currentTime;
-                        
-                    }
+                    Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
                     
                 }
+
+
 
                 initialize();
                 
