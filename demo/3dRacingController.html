@@ -77,7 +77,7 @@
 
                     ev.preventDefault();
                     
-                    conn.send(ev.targetTouches.clientY/canvasElement.height);
+                    conn.send(ev.targetTouches[0].clientY/canvasElement.height);
                     //passCoordinates(ev.targetTouches);
 
                 }
