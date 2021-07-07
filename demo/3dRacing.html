@@ -55,6 +55,8 @@
 
            
             var mouseX = 0;
+            mouseDown = 0;
+            mousePressed = 0;
             
 
              //Create the Peer object for our end of the connection.
@@ -77,7 +79,7 @@
                     console.log('ID: ' + peer.id);
                     recvId.innerHTML = "ID: " + peer.id;
                     status.innerHTML = "Awaiting connection...";
-                    new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacingController.html?id=" + peer.id);
+                    new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacingCanvasController.html?id=" + peer.id);
                     popupBox.style.display = "block";
                 });
 
@@ -128,8 +130,17 @@
             function ready() {
                 conn.on('data', function (data) {               
                     //processCoordinates(data);
-                    mouseX = (1180*data)/window.innerWidth*2 - 1;
-                    //console.log(mouseX);
+                    mouseX = (1180*data[0])/window.innerWidth*2 - 1;
+                    mousePressed = data[1];
+                    console.log(mousePressed);
+                    if (mousePressed==2){
+                        mouseDown=1;
+                    }
+                    else{
+                        mouseDown = 0;
+                    }
+                    
+                    
 
                 });
                 conn.on('close', function () {
@@ -137,21 +148,7 @@
                     conn = null;
                 });
             }
-
-                
-                
-                function processCoordinates(coordinates) {
-  
-                    fingers = coordinates.length;
-
-                   
-                        
-
-                        
-                }
-
-
-            
+           
                 initialize();
 
 
@@ -208,15 +205,12 @@
                 //////////////////////////////////////////////////////////////////
                 // mouse input
                 //////////////////////////////////////////////////////////////////
-
-                mouseDown     =
-                mousePressed  =
                 mouseUpFrames = 0;
-                //mouseX        = 0;
+                
                     
                 onmouseup   =e=> mouseDown = 0;
                 onmousedown =e=> mousePressed ? mouseDown = 1 : mousePressed = 1;
-                //onmousemove =e=> mouseX = e.x/window.innerWidth*2 - 1;
+                
                 
                 //////////////////////////////////////////////////////////////////
                 // math and helper functions
@@ -349,7 +343,7 @@
                 // get player road segment
                 s = position.z / segmentLength | 0; // current road segment
                 p = position.z / segmentLength % 1; // percent along segment
-                console.log(mouseX);
+                
 
                 // get lerped values between last and current road segment
                 roadX = Lerp(p, road[s].x, road[s+1].x);
@@ -382,6 +376,7 @@
                     .Multiply(-elasticity * dp).Add(velocity);
                     
                 // apply player brake and accel
+                
                 velocity.z += 
                     mouseDown? playerBrake :
                     Lerp(velocity.z/maxSpeed, mousePressed*playerAccel, 0);
@@ -401,8 +396,7 @@
                 velocity.z ** 2 * centrifugal * roadX;
                 
                 // update jump
-                if (airFrame++<6 && time 
-                && mouseDown && mouseUpFrames && mouseUpFrames<9)
+                if (airFrame++<6 && time && fingers==3)
                 {
                 velocity.y += jumpAccel; // apply jump velocity
                 airFrame = 9;            // prevent jumping again

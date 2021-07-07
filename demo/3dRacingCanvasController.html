@@ -70,7 +70,7 @@
                     
                     ev.preventDefault();                                   
                     //passCoordinates(ev.targetTouches);
-                    //conn.send(ev.targetTouches[0].clientY/canvasElement.height);
+                    conn.send([ev.targetTouches[0].clientY/canvasElement.height, ev.targetTouches.length]);
                 }
 
                 function move_handler(ev) {
