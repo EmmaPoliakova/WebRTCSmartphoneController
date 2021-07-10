@@ -4,7 +4,7 @@
  var lastPeerId = null;
  var peer = null; // own peer object
  var conn = null;
- var recvIdInput = document.getElementById("receiver-id");
+
 
  
 
@@ -107,13 +107,23 @@
 
 var joystick = manager.get(manager.id);
 var joystickX = joystick.position.x - 50;
+var joystickY = joystick.position.y;
 
 
 joystick.on("move", function (evt, data) {
-    if (data.direction){
-        //var coordinates = [1248* ((data.position.x - joystickX)/100)/ 1248 * 2 - 1, data.direction.angle];
-        var coordinates = [((data.position.x - joystickX)/100), data.direction.angle];
-        console.log(coordinates);
+    
+        if (Math.abs(data.position.y - joystickY+50)<5){
+            var angle = "up";
+            
+        }
+        else if(Math.abs(data.position.y - joystickY-50)<5){
+            var angle = "down";
+            
+        }
+        else {
+            var angle = "straight";
+        }
+        var coordinates = [((data.position.x - joystickX)/100), angle];
         conn.send(coordinates);
-    }
+    
 })
