@@ -130,7 +130,8 @@
             function ready() {
                 conn.on('data', function (data) {               
                     //processCoordinates(data);
-                    mouseX = (1180*data[0])/window.innerWidth*2 - 1;
+                    mouseX = (c.width*data[0])/window.innerWidth*2 - 1;
+                    console.log(mouseX);
                     mousePressed = data[1];
                     console.log(mousePressed);
                     if (mousePressed==2){
