@@ -110,7 +110,9 @@ var joystickX = joystick.position.x;
 
 
 joystick.on("move", function (evt, data) {
-    var coordinates = [data.position.x / joystickX , data.direction.angle];
-    //console.log(coordinates);
-    conn.send(coordinates);
+    if (data.direction){
+        var coordinates = [data.position.x / joystickX , data.direction.angle];
+        console.log(coordinates);
+        conn.send(coordinates);
+    }
 })
