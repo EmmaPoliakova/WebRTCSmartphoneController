@@ -141,7 +141,7 @@
             function ready() {
                 conn.on('data', function (data) {               
                     
-                    mouseX = (c.width*data[0])/window.innerWidth*2 - 1.5;
+                    mouseX = (c.width*data[0])/window.innerWidth*2 - 1;
                     console.log(mouseX);
                     mousePressed = data[1];
                     
