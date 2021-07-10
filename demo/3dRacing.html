@@ -16,18 +16,28 @@
                 <div id="status" class="status"></div>
                 
 
-
-        <center>
-            <div id="qrbox" class="modal">
-    
-                <div class="modal-content">
-                    <p> Scan the qr code to connect your device.</p>
-                    <div id="qrcode"></div>
-                
-                </div>
-              
-              </div>
-            </center>
+                <center>
+                    <div id="qrbox" class="modal">
+                        <div class="modal-content">
+                            <p > Scan a QRcode to connect your device </p>
+                            <div class="wrap">
+            
+            
+                                <div class="fleft">
+                                    <p > Canvas </p>
+                                    <div id="qrcode1"></div>
+                                </div>
+            
+                                <div class="fright">
+                                    <p > Joystick </p>
+                                    <div id="qrcode2"></div>
+                                </div>
+            
+                        </div>
+                      </div>
+                        
+                    </div>
+                    </center>
 
         <canvas id=c>
 
@@ -79,7 +89,8 @@
                     console.log('ID: ' + peer.id);
                     recvId.innerHTML = "ID: " + peer.id;
                     status.innerHTML = "Awaiting connection...";
-                    new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacingCanvasController.html?id=" + peer.id);
+                    new QRCode(document.getElementById("qrcode1"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacingCanvasController.html?id=" + peer.id);
+                    new QRCode(document.getElementById("qrcode2"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacingJoystickController.html?id=" + peer.id);
                     popupBox.style.display = "block";
                 });
 
@@ -129,13 +140,16 @@
              */
             function ready() {
                 conn.on('data', function (data) {               
-                    //processCoordinates(data);
+                    
                     mouseX = (c.width*data[0])/window.innerWidth*2 - 1;
                     console.log(mouseX);
                     mousePressed = data[1];
                     console.log(mousePressed);
-                    if (mousePressed==2){
+                    if (mousePressed==2 || mousePressed=="down"){
                         mouseDown=1;
+                    }
+                    else if ((mousePressed==3 || mousePressed=="up")){
+                        mouseDown=2;
                     }
                     else{
                         mouseDown = 0;
@@ -397,7 +411,8 @@
                 velocity.z ** 2 * centrifugal * roadX;
                 
                 // update jump
-                if (airFrame++<6 && time && fingers==3)
+                //if (airFrame++<6 && time && fingers==3)
+                if (airFrame++<6 && mouseDown==2)
                 {
                 velocity.y += jumpAccel; // apply jump velocity
                 airFrame = 9;            // prevent jumping again
