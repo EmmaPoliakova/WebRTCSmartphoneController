@@ -154,6 +154,7 @@
                     else{
                         mouseDown = 0;
                     }
+                    mousePressed = 1;
                     
                     
 
@@ -412,7 +413,7 @@
                 
                 // update jump
                 //if (airFrame++<6 && time && fingers==3)
-                if (airFrame++<6 && mouseDown==2)
+                if (airFrame++<6 && time && mouseDown==2)
                 {
                 velocity.y += jumpAccel; // apply jump velocity
                 airFrame = 9;            // prevent jumping again

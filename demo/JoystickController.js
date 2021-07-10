@@ -106,13 +106,14 @@
 });
 
 var joystick = manager.get(manager.id);
-var joystickX = joystick.position.x - 51;
+var joystickX = joystick.position.x - 50;
 
 
 joystick.on("move", function (evt, data) {
     if (data.direction){
-        var coordinates = [((data.position.x - joystickX)/ 100, data.direction.angle];
+        //var coordinates = [1248* ((data.position.x - joystickX)/100)/ 1248 * 2 - 1, data.direction.angle];
+        var coordinates = [((data.position.x - joystickX)/100), data.direction.angle];
         console.log(coordinates);
-        //conn.send(coordinates);
+        conn.send(coordinates);
     }
 })
