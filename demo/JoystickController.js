@@ -5,8 +5,9 @@
  var peer = null; // own peer object
  var conn = null;
 
-
- 
+var pingElement = document.getElementById("ping");
+var prevPing;
+var ping; 
 
  // peer id from url variables
  const queryString = window.location.search;             
@@ -86,7 +87,8 @@
      });
      // Handle incoming data (messages only since this is the signal sender)
      conn.on('data', function (data) {
-
+        ping = Date.now() - prevPing;
+        pingElement.innerHTML = ping + " ms";
      });
      conn.on('close', function () {
          status.innerHTML = "Connection closed";
@@ -125,5 +127,6 @@ joystick.on("move", function (evt, data) {
         }
         var coordinates = [((data.position.x - joystickX)/100), angle];
         conn.send(coordinates);
+        prevPing = Date.now();
     
 })
