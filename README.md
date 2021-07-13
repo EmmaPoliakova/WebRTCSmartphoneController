@@ -5,5 +5,6 @@ Touch screen - 1 phone (29/06/21): https://emmapoliakova.github.io/SmartphoneLea
 Touch screen - 2 phones (02/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/receiveMultiple.html
 
 Touch screen tower building with physics engine (04/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemo.html
+Touch screen tower building with physics engine - version 2, refactored (13/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemoV2.html
 
 Touch screen 3D racing game canvas/joystick (07/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacing.html
