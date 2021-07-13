@@ -6,16 +6,15 @@
         <link rel="stylesheet" href="style.css">
         <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
-        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
+        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+        <script src = "../src/connectionManager.js"> </script>
 
     </head>
     <body>
 
-                <td class="title">Status:</td>
-                <div id="receiver-id" style="font-weight: bold;" title="Copy this ID to the input on send.html.">ID:</div>
-                <div id="status" class="status"></div>
-                <div id="framesPerSecond" class="fps"></div>
-
+                
+                <div id="stats" style='float: right;'></div>
 
         <center>
             <div id="qrbox" class="modal">
@@ -29,41 +28,21 @@
               </div>
             </center>
 
-       
+                  
             
-        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+
         <script type="text/javascript">            
             
 
             //pup up window with QR
             var popupBox = document.getElementById("qrbox");
             var span = document.getElementsByClassName("close")[0];
-
-            var colours = ["green", "blue", "red", "yellow", "orange"];
-            var fingers = 0;
+            var qrcode = document.getElementById("qrcode");
 
 
-            // count frames variables
-            var frames = 0;
-            var prevTime = new Date();
-            prevTime = prevTime.getTime(); 
-            
-            // peer variables
-            var lastPeerId = null;
-            var peer = null; // Own peer object
-            var peerId = null;
-            var conn = null;
-
-            var recvId = document.getElementById("receiver-id");
-            var status = document.getElementById("status");
-
-            var fps = document.getElementById("framesPerSecond");
-
+            //matter.js section
             var selected = null;
             var selectedBody = null;
-
-            var worldWidth = 800;
-            var worldHeight = 600;
 
             var Engine = Matter.Engine,
             Render = Matter.Render,
@@ -73,169 +52,105 @@
             Composite = Matter.Composite,
             Bodies = Matter.Bodies;
 
-        // create engine
-        var engine = Engine.create(),
-            world = engine.world;
+            var stats = new Stats();
+			stats.showPanel(0);
+			document.getElementById('stats').appendChild(stats.domElement)
 
-        // create renderer
-        var render = Render.create({
-            element: document.body,
-            engine: engine,
-            options: {
-                width: 800,
-                height: 600,
-                wireframes: false,
-                background: '#e7e4f4',  
-                showAxes: true,
-                showCollisions: true,
-                showConvexHulls: true
+            // create engine
+            var engine = Engine.create(),
+                world = engine.world;
+
+            // create renderer
+            var render = Render.create({
+                element: document.body,
+                engine: engine,
+                options: {
+                    width: 800,
+                    height: 600,
+                    wireframes: false,
+                    background: '#e7e4f4',  
+                    showAxes: true,
+                    showCollisions: true,
+                    showConvexHulls: true
+                }
+            });
+
+            Render.run(render);
+
+            var runner = Runner.create();
+            Runner.run(runner, engine);
+
+            var allBodies = [];
+            // add bodies
+            for (var i=0; i<5; i++){
+                var x = 100+i*50;
+                var y = 200+i*50;
+                var w = 50+i*10;
+                var h = 50+i*10;
+                var body = Bodies.rectangle(x, y, w, h, { render: { fillStyle: '#060a19' } });
+                Composite.add(world, [body]);
+                allBodies.push([[body.position.x,body.position.y],body]);
+
             }
-        });
-
-        Render.run(render);
-
-        var runner = Runner.create();
-        Runner.run(runner, engine);
-
-        var allBodies = [];
-        var allBodiesNormalized = [];
-        // add bodies
-        for (var i=0; i<5; i++){
-            var x = 100 + i*50;
-            var y = 100 + i*50;
-            var w = 50 + i*10;
-            var h = 50 + i*10;
-            var body = Bodies.rectangle(x, y, w, h, { render: { fillStyle: '#060a19' } });
-            Composite.add(world, [body]);
-            allBodies.push([[body.position.x,body.position.y],body]);
-            allBodiesNormalized.push([body.position.x / worldWidth, body.position.y / worldHeight, w/worldWidth, h/worldHeight]);
-
-        }    
-
-        
 
 
-
-        Composite.add(world, [
-        // walls
-        Bodies.rectangle(400, 0, 800, 50, { isStatic: true }),
-        Bodies.rectangle(400, 600, 800, 50, { isStatic: true }),
-        Bodies.rectangle(800, 300, 50, 600, { isStatic: true }),
-        Bodies.rectangle(0, 300, 50, 600, { isStatic: true })
-        ]);
+            Composite.add(world, [
+            // walls
+            Bodies.rectangle(400, 0, 800, 50, { isStatic: true }),
+            Bodies.rectangle(400, 600, 800, 50, { isStatic: true }),
+            Bodies.rectangle(800, 300, 50, 600, { isStatic: true }),
+            Bodies.rectangle(0, 300, 50, 600, { isStatic: true })
+            ]);
 
             
-    
 
-
-             //Create the Peer object for our end of the connection.
+             //Create the Peer object for our end of the connection + listeners.
              
-                function initialize() {
-                // Create own peer object with connection to shared PeerJS server
-                peer = new Peer(null, {
-                    debug: 2
+                managerInitialize();
+                createQrCode("https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/sendScreenPhysicsV2.html" ,qrcode, popupBox);
+
+                el.addEventListener('open', function(e){
+                    popupBox.style.display = "none";
+                });
+                            
+                el.addEventListener('data', function(e){
+                    var data = e.detail;
+                   
+                   switch(data[1][0]) {
+                       case "select":
+                           findClosest(data[1][1]);
+                          
+                           break;
+                       case "move":
+                           if (selectedBody!= null){
+                               processCoordinates(data[1][1]);
+                           }
+                           break;
+                       case "drop":
+                           if (selectedBody!= null){
+                               setPositions();
+                               selectedBody.isStatic = false;
+                               selectedBody = null;
+                           }
+                           break; 
+                   }             
+                   
+     
+
                 });
 
-                peer.on('open', function (id) {
-                    // Work-around for peer.reconnect deleting previous id
-                    if (peer.id === null) {
-                        console.log('Received null id from peer open');
-                        peer.id = lastPeerId;
-                    } else {
-                        lastPeerId = peer.id;
-                    }
 
-                    console.log('ID: ' + peer.id);
-                    recvId.innerHTML = "ID: " + peer.id;
-                    status.innerHTML = "Awaiting connection...";
-                    new QRCode(document.getElementById("qrcode"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/sendScreenPhysicsV2.html?id=" + peer.id);
+                el.addEventListener('close', function(e){
                     popupBox.style.display = "block";
                 });
-
-                peer.on('connection', function (c) {
-                    // Allow only a single connection
-                    if (conn && conn.open) {
-                        c.on('open', function() {
-                            c.send("Already connected to another client");
-                            setTimeout(function() { c.close(); }, 500);
-                        });
-                        return;
-                    }
-
-                    conn = c;
-                    console.log("Connected to: " + conn.peer);
-                    status.innerHTML = "Connected";
-                    popupBox.style.display = "none";
-                    setPositions();
-                    ready();
-                    conn.send(allBodiesNormalized);
-
-                });
-
-                peer.on('disconnected', function () {
-                    status.innerHTML = "Connection lost. Please reconnect";
-                    console.log('Connection lost. Please reconnect');
-
-                    // Work-around for peer.reconnect deleting previous id
-                    peer.id = lastPeerId;
-                    peer._lastServerId = lastPeerId;
-                    peer.reconnect();
-                });
-
-                peer.on('close', function() {
-                    conn = null;
-                    status.innerHTML = "Connection destroyed. Please refresh";
-                    console.log('Connection destroyed');
-                });
-
-                peer.on('error', function (err) {
-                    console.log(err);
-                    alert('' + err);
-                });
-            };
-
-            /**
-             * Triggered once a connection has been achieved.
-             * Defines callbacks to handle incoming data and connection events.
-             */
-            
-            function ready() {
-                conn.on('data', function (data) {
-                    console.log(data[0]);
-                    switch(data[0]) {
-                        case "select":
-                            conn.send(allBodiesNormalized);
-                            selected = data[1];
-                            selectedBody = allBodies[selected][1];
-                            selectedBody.isStatic = true;
-                            break;
-                        case "move":
-                            //selectedBody.ignoreGravity = true;
-                            processCoordinates(data[1]);
-                            break;
-                        case "drop":
-                            setPositions();
-                            //selectedBody.ignoreGravity = false;
-                            selectedBody.isStatic = false;
-                            break; 
+               
 
 
-                    }             
-                    
-
-                });
-                conn.on('close', function () {
-                    status.innerHTML = "Connection reset<br>Awaiting connection...";
-                    conn = null;
-                });
-            }
-
+                //functions to handle 
                 function setPositions(){
                     for (var i = 0; i<allBodies.length; i++){
                         var body = allBodies[i][1];
                         allBodies[i][0] = [body.position.x,body.position.y];
-                        allBodiesNormalized[i][0] = body.position.x / worldWidth;
-                        allBodiesNormalized[i][1] = body.position.y / worldHeight;
                     }
                 }
                 
@@ -250,37 +165,23 @@
                             prev = val;
                         }
                     }
-                    selected = allBodies.indexOf(prev);
-                    selectedBody = prev[1];
-                    //selectedBody.ignoreGravity = true;
-                    selectedBody.isStatic = true;
+
+                    //if (Matter.Vertices.contains(prev[1].vertices, { x: coordinates[0][0]*800, y: coordinates[0][1]*600})){
+                   
+                        selected = allBodies.indexOf(prev);
+                        selectedBody = prev[1];
+                        selectedBody.isStatic = true;
+                    //}
                 }
 
                 function processCoordinates(coordinates) {
-
-                    var currentTime = new Date();  
-                    if (selectedBody!=null){
-                        Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
-                    }
-
-                    framePerSecond(currentTime.getTime());
-                }
-
-
-                function framePerSecond(currentTime){
-                    if ((currentTime - prevTime)/1000 < 1){
-                        frames += 1;
-                    }
-                    else {
-                        fps.innerHTML = "FPS: " + frames;
-                        frames = 1;
-                        prevTime = currentTime;
-                        
-                    }
+                    Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
                     
                 }
 
-                initialize();
+
+
+    
                 
 
         </script>
