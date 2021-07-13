@@ -12,25 +12,11 @@ manager = nipplejs.create({
 });
 
 joystick = manager.get(manager.id);
-var joystickX = joystick.position.x - 50;
-var joystickY = joystick.position.y;
 
 
 joystick.on("move", function (evt, data) {
     
-        if (Math.abs(data.position.y - joystickY+50)<5){
-            var angle = "up";
-            
-        }
-        else if(Math.abs(data.position.y - joystickY-50)<5){
-            var angle = "down";
-            
-        }
-        else {
-            var angle = "straight";
-        }
-        var coordinates = [((data.position.x - joystickX)/100), angle];
-        conn.send(coordinates);
+        conn.send(data);
         prevPing = Date.now();
     
 })

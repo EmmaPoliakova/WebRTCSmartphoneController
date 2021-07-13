@@ -14,14 +14,14 @@ function canvasReady(canvas){
 function start_handler(ev) {
     
     ev.preventDefault();                                   
-    passCoordinates(ev.targetTouches);
+    passCoordinates("start" ,ev.targetTouches);
     
 }
 
 function move_handler(ev) {
 
     ev.preventDefault();
-    passCoordinates(ev.targetTouches);
+    passCoordinates("move", ev.targetTouches);
 
 }
 
@@ -31,6 +31,7 @@ function end_handler(ev) {
         // Restore background and outline to original values
         
     }
+    conn.send(["end"]);
 }
 
 function set_handlers(e) {
@@ -43,13 +44,14 @@ function set_handlers(e) {
     el.ontouchend = end_handler;
 }
 
-function passCoordinates(coords){
+function passCoordinates(command, coords){
     if (conn && conn.open) {
         coordinates = new Array(); 
         for (var i=0; i < coords.length; i++) {
             coordinates.push([coords[i].clientX/canvasElement.width, coords[i].clientY/canvasElement.height]);
             }
-            var msg = coordinates; 
+            var msg = [command, coordinates]; 
+            console.log(msg);
             conn.send(msg);
             prevPing = Date.now();
         } else {

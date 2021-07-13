@@ -6,7 +6,7 @@
     stats.showPanel(0);
     
 
-    function managerInitialize(){
+    function managerInitialize(url, qrDomElement, displayDomElement){
 
         peer = new Peer(null, {
             debug: 2
@@ -15,11 +15,14 @@
 
         peer.on('open', function(id) {
             console.log('My peer ID is: ' + id);
+            createQrCode(url, qrDomElement, displayDomElement);
         });
 
         peer.on('connection',function(conn){
             
             remotePeerIds.push(conn); // Add remote peer to list
+            var connected = new CustomEvent('open', {detail : "connection closed"});    
+                el.dispatchEvent(connected);
 
             //video calls
             var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
@@ -51,8 +54,8 @@
             });
         
             conn.on('close',function(){
-                var discnonnected = new CustomEvent('close', {detail : "connection closed"});    
-                el.dispatchEvent(discnonnected);
+                var disconnected = new CustomEvent('close', {detail : "connection closed"});    
+                el.dispatchEvent(disconnected);
                 console.log("Conection "+ conn.peer +" closed")
             });
         
@@ -63,9 +66,12 @@
 
 
 
-    function createQrCode(url){
-        var qrCode = new QRCode("qrcode", url + "?id=" + peer.id);
-        return(qrCode);
+    function createQrCode(url, qrDomElement, displayDomElement){
+        //var qrCode = new QRCode("qrcode", url + "?id=" + peer.id);
+       // return(qrCode);
+       new QRCode(qrDomElement, url + "?id=" + peer.id);
+       console.log(peer.id)
+       displayDomElement.style.display = "block";
     }
 
     function setRemoteStream(stream){
