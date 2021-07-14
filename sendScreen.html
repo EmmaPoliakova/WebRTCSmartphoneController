@@ -58,6 +58,7 @@
                 const id = urlParams.get('id')
      
 
+                var prevPing;
 
                 // touch input canvas varaibles
                 var canvasElement = document.getElementsByClassName('input_canvas')[0];
@@ -109,6 +110,7 @@
                             }
                             var msg = coordinates; 
                             conn.send(msg);
+                            prevPing = Date.now();
                         } else {
                             console.log('Connection is closed');
                         }
@@ -196,7 +198,8 @@
                     });
                     // Handle incoming data (messages only since this is the signal sender)
                     conn.on('data', function (data) {
-                        addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+                        var ping = prevPing - Date.now();
+                        console.log(ping);
                     });
                     conn.on('close', function () {
                         status.innerHTML = "Connection closed";

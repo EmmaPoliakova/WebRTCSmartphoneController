@@ -106,8 +106,8 @@
 
              //Create the Peer object for our end of the connection + listeners.
              
-                managerInitialize();
-                createQrCode("https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/sendScreenPhysicsV2.html" ,qrcode, popupBox);
+                managerInitialize("https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/sendScreenPhysicsV2.html" ,qrcode, popupBox);
+                
 
                 el.addEventListener('open', function(e){
                     popupBox.style.display = "none";
@@ -115,9 +115,10 @@
                             
                 el.addEventListener('data', function(e){
                     var data = e.detail;
+                    
                    
                    switch(data[1][0]) {
-                       case "select":
+                       case "start":
                            findClosest(data[1][1]);
                           
                            break;
@@ -126,7 +127,7 @@
                                processCoordinates(data[1][1]);
                            }
                            break;
-                       case "drop":
+                       case "end":
                            if (selectedBody!= null){
                                setPositions();
                                selectedBody.isStatic = false;
@@ -175,6 +176,7 @@
                 }
 
                 function processCoordinates(coordinates) {
+                    
                     Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
                     
                 }
