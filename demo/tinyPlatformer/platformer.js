@@ -1,4 +1,4 @@
-(function() { // module pattern
+function Start() { // module pattern
 
   //-------------------------------------------------------------------------
   // POLYFILLS
@@ -82,10 +82,11 @@
   //-------------------------------------------------------------------------
 
   function onkey(ev, key, down) {
+    console.log(key)
     switch(key) {
-      case KEY.LEFT:  player.left  = down; ev.preventDefault(); return false;
-      case KEY.RIGHT: player.right = down; ev.preventDefault(); return false;
-      case KEY.SPACE: player.jump  = down; ev.preventDefault(); return false;
+      case "left":  player.left  = down; return false;
+      case "right": player.right = down;  return false;
+      case "up": player.jump  = down;  return false;
     }
   }
   
@@ -372,13 +373,13 @@
     requestAnimationFrame(frame, canvas);
   }
   
-  document.addEventListener('keydown', function(ev) { return onkey(ev, ev.keyCode, true);  }, false);
-  document.addEventListener('keyup',   function(ev) { return onkey(ev, ev.keyCode, false); }, false);
+  control.addEventListener('keydown', function(ev) { return onkey(ev, ev.detail, true);  }, false);
+  control.addEventListener('keyup',   function(ev) { return onkey(ev, ev.detail, false); }, false);
 
   get("level.json", function(req) {
     setup(JSON.parse(req.responseText));
     frame();
   });
 
-})();
+};
 

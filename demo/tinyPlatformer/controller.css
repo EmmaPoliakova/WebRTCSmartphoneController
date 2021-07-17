@@ -1,0 +1,207 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: block;  
+    background-color: rgb(180, 179, 179);
+
+}
+
+  .container {
+    display: grid;
+    grid-template-columns: 10% 10% 10% 30% 15% 15%;
+    grid-template-rows: 15% 15% 15% 15% 15% 15%; 
+    background-color:#000000;
+    height: 90%;
+    width: 90%;
+  
+    align-content: center;
+    position:relative;
+    gap: 5px;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    grid-template-areas: 
+      ". . . grey1 . ."
+      ". . . grey2 . ."
+      ". up . grey3 . ."
+      "left middle right grey4 s1 s2"
+      ". down . grey4 s1 s2"
+      ". . . grey5 . ."
+    
+  }
+
+  .square {
+    width: 98%;
+    height: 98%;
+    border-radius: 10px;
+    border: 2px solid;
+    border-color: #dddcdc;
+    background: #2b2a2a; 
+    
+  }
+
+  .square1 {
+    width: 90%;
+    height: 90%;
+    border-radius: 10px;
+    background: #dddcdc; 
+    
+  }
+
+  .rcorners {
+    border-radius: 15px;
+    background: #777676;
+    width: 100%;
+    height: 98%;
+}
+
+.rcorners1 {
+    border-radius: 15px;
+    background: #dfdddd;
+    width: 100%;
+    height: 100%;
+}
+
+  .item-a {
+    grid-area: grey1;
+      
+  }
+  .item-b {
+    grid-area: grey2;
+    
+  }
+  .item-c {
+    grid-area: grey3;
+    
+  }
+  .item-d {
+    grid-area: grey4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+  }
+  .item-e {
+    grid-area: grey5;
+    
+  }
+
+
+
+.item-f {
+  grid-area: up;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.item-g {
+  grid-area: left;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.item-h {
+  grid-area: middle;
+  
+}
+
+.item-i {
+  grid-area: right;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.item-j {
+  grid-area: down;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.item-k {
+    grid-area: s1;
+    justify-self: end;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    
+  }
+
+.item-l {
+    grid-area: s2;
+    justify-self: end;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+  } 
+
+  .round-button {
+    height: 85%;
+    width: 85%;
+    border-radius: 50%;
+    border: 1px solid red;
+    background: #b80404;
+  }
+
+
+  .square-button {
+    height: 90%;
+    width: 90%;
+    border-radius: 20%;
+    background: rgb(56, 56, 56);
+    
+  }
+
+  .rectangle-button {
+    height: 15%;
+    width: 40%;
+    border-radius:20%;
+    padding: 10px;
+    margin: 10px;
+    display:inline-block;
+    border: 1px solid rgb(0, 0, 0);
+    background: #000000;
+    
+  }
+  
+
+  .arrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+  }
+  
+  .right {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+  }
+  
+  .left {
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+  }
+  
+  .up {
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+  }
+  
+  .down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+  }
+
+
+
