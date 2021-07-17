@@ -81,8 +81,8 @@ function Start() { // module pattern
   // UPDATE LOOP
   //-------------------------------------------------------------------------
 
-  function onkey(ev, key, down) {
-    console.log(key)
+  function onkey(key, down) {
+
     switch(key) {
       case "left":  player.left  = down; return false;
       case "right": player.right = down;  return false;

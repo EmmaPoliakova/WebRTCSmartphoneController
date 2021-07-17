@@ -70,25 +70,21 @@
     });
 
     el.addEventListener('data', function(e){
-      console.log(e.detail);
       current_move = e.detail[1];
       if(current_move[0]=="s"){
-        console.log(current_move);
-        var down = new CustomEvent('keydown', {detail : current_move[1]});
-        control.dispatchEvent(down);
+        onkey(current_move[1], true);
       }
 
 
-      else {
-        var up = new CustomEvent('keyup', {detail : current_move[1]});    
-        control.dispatchEvent(up);
+      else if (current_move[0]=="r") {
+        onkey(current_move[1], false);
       }
       
 
     });
 
     el.addEventListener('close', function(e){
-        console.log(e.detail);
+      popupBox.style.display = "block";
     }); 
 
     Start();

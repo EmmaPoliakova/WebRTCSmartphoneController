@@ -15,8 +15,8 @@ joystick = manager.get(manager.id);
 
 
 joystick.on("move", function (evt, data) {
-    
-        conn.send(data);
+        console.log(data);
+        conn.send([data.direction.angle, data.position.x, data.position.y]);
         prevPing = Date.now();
     
 })

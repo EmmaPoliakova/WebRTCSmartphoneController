@@ -15,7 +15,7 @@
         <div class="container">
             <div class="rcorners item-a"></div>
             <div class="rcorners item-b"></div>
-            <div class="rcorners item-c"></div>
+            <div class="rcorners item-c"><p> SELECT START</p></div>
             <div class="rcorners1 item-d"> 
                 <button id="select" class="rectangle-button" ontouchstart="press(event, this.id)" ontouchend="release(event, this.id)"></button> 
                 <button id="start" class="rectangle-button" ontouchstart="press(event, this.id)" ontouchend="release(event, this.id)"></button>
@@ -23,14 +23,17 @@
 
             <div class="rcorners item-e"></div>
 
-            <div class="square item-f"><button id="up" class="square-button" ontouchstart="press(event, this.id)" ontouchend="release(event, this.id)"></button></div>
+            <div class="square item-f"><button id="up" class="square-button" ontouchstart="press(event, this.id)" ontouchend="release(event, this.id)"><img src="images/up.png" width="30px" height= "30px"></button></div>
             <div class="square item-g"><button id="left" class="square-button" ontouchstart="press(event, this.id)" ontouchend="release(event, this.id)"><img src="images/left.png" width="30px" height= "30px"></button></div>
             <div class="square item-h"></div>
-            <div class="square item-i"><button id="right" class="square-button" ontouchstart="press(event, this.id)" ontouchend="release(event, this.id)"></button></div>
+            <div class="square item-i"><button id="right" class="square-button" ontouchstart="press(event, this.id)" ontouchend="release(event, this.id)"><img src="images/right.png" width="30px" height= "30px"></button></div>
             <div class="square item-j"><button id="down" class="square-button" ontouchstart="press(event, this.id)" ontouchend="release(event, this.id)"><img src="images/down.png" width="30px" height= "30px"></button></div>
 
             <div class="square1 item-k"> <button id="b" class="round-button" ontouchstart="press(event, this.id)" ontouchend="release(event, this.id)"></button> </div>
             <div class="square1 item-l"> <button id="a" class="round-button" ontouchstart="press(event, this.id)" ontouchend="release(event, this.id)"></button></div>
+
+            <div class="item-m"> <p style = "margin: 0px"> B </p></div>
+            <div class="item-n"> <p style = "margin: 0px"> A </p></div>
 
           </div>
           
@@ -40,13 +43,11 @@
 
             function press(event, id){
                 event.preventDefault();
-                console.log("pressed" + id);
                 conn.send(["s", id]);
             }
 
             function release(event, id){
                 event.preventDefault();
-                console.log("released" + id);
                 conn.send(["r", id]);
             }
 

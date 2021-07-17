@@ -4,6 +4,7 @@ var peer = null; // own peer object
 var conn = null;
 var ping;
 var prevPing; 
+var pingElement = document.getElementById("ping");
 
 const queryString = window.location.search;             
 const urlParams = new URLSearchParams(queryString);
@@ -81,6 +82,7 @@ function join() {
     conn.on('data', function (data) {
         ping = Date.now() - prevPing;
         console.log(ping + " ms");
+        pingElement.innerHTML = ping + " ms";
 
     });
 

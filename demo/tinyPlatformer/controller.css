@@ -28,13 +28,13 @@ html, body {
       ". up . grey3 . ."
       "left middle right grey4 s1 s2"
       ". down . grey4 s1 s2"
-      ". . . grey5 . ."
+      ". . . grey5 b a"
     
   }
 
   .square {
-    width: 98%;
-    height: 98%;
+    width: 96%;
+    height: 96%;
     border-radius: 10px;
     border: 2px solid;
     border-color: #dddcdc;
@@ -147,6 +147,21 @@ html, body {
     
   } 
 
+  .item-m {
+    grid-area: b;
+    justify-self: end;
+    display: flex;
+
+  } 
+
+  .item-n {
+    grid-area: a;
+    justify-self: end;
+    
+
+    
+  } 
+
   .round-button {
     height: 85%;
     width: 85%;
@@ -175,34 +190,20 @@ html, body {
     background: #000000;
     
   }
+
+  p {
+    color: red;
+    font-size: 120%;
+    word-spacing: 25px;
+    text-align: center;
+    vertical-align: top;
+    font-weight: bold;
+  
+  }
+  
   
 
-  .arrow {
-    border: solid black;
-    border-width: 0 3px 3px 0;
-    display: inline-block;
-    padding: 3px;
-  }
-  
-  .right {
-    transform: rotate(-45deg);
-    -webkit-transform: rotate(-45deg);
-  }
-  
-  .left {
-    transform: rotate(135deg);
-    -webkit-transform: rotate(135deg);
-  }
-  
-  .up {
-    transform: rotate(-135deg);
-    -webkit-transform: rotate(-135deg);
-  }
-  
-  .down {
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-  }
+
 
 
 
