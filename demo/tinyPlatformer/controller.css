@@ -60,6 +60,7 @@ html, body {
 .rcorners1 {
     border-radius: 15px;
     background: #dfdddd;
+    border: 1px solid #777676;
     width: 100%;
     height: 100%;
 }

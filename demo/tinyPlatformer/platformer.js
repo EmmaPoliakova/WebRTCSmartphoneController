@@ -86,7 +86,7 @@ function Start() { // module pattern
     switch(key) {
       case "left":  player.left  = down; return false;
       case "right": player.right = down;  return false;
-      case "up": player.jump  = down;  return false;
+      case "a": player.jump  = down;  return false;
     }
   }
   
