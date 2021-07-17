@@ -62,27 +62,24 @@
     var control = document.createElement('div');
 
 
-    managerInitialize("https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/tinyPlatformer/JoystickController.html" ,code, popupBox);
+    managerInitialize("https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/tinyPlatformer/nesController.html" ,code, popupBox);
 
     el.addEventListener('open', function(e){
       popupBox.style.display = "none";
     });
 
     el.addEventListener('data', function(e){
-      if (e.detail[1][0] != previous_move){
-        previous_move = current_move;
+      console.log(e.detail);
+      current_move = e.detail[1];
+      if(current_move[0]=="s"){
+        console.log(current_move);
+        var down = new CustomEvent('keydown', {detail : current_move[1]});
+        control.dispatchEvent(down);
       }
-      else{
-        previous_move = null;
-      }
-      current_move = e.detail[1][0];
-      console.log(current_move);
-      var down = new CustomEvent('keydown', {detail : current_move});
-      control.dispatchEvent(down);
 
 
-      if (previous_move != null){
-        var up = new CustomEvent('keyup', {detail : previous_move});    
+      else {
+        var up = new CustomEvent('keyup', {detail : current_move[1]});    
         control.dispatchEvent(up);
       }
       
