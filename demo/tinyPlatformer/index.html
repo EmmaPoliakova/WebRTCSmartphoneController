@@ -59,7 +59,6 @@
     var popupBox = document.getElementById("qrbox");
     var code = document.getElementById("qrcode");
     var current_move;
-    var previous_move = null;
     var control = document.createElement('div');
 
 
@@ -67,20 +66,6 @@
 
     el.addEventListener('open', function(e){
       popupBox.style.display = "none";
-    });
-
-    el.addEventListener('data', function(e){
-      current_move = e.detail[1];
-      if(current_move[0]=="s"){
-        onkey(current_move[1], true);
-      }
-
-
-      else if (current_move[0]=="r") {
-        onkey(current_move[1], false);
-      }
-      
-
     });
 
     el.addEventListener('close', function(e){

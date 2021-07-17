@@ -1,5 +1,20 @@
 function Start() { // module pattern
 
+  el.addEventListener('data', function(e){
+    current_move = e.detail[1];
+    if(current_move[0]=="s"){
+      onkey(current_move[1], true);
+    }
+
+
+    else if (current_move[0]=="r") {
+      onkey(current_move[1], false);
+    }
+    
+
+  });
+
+
   //-------------------------------------------------------------------------
   // POLYFILLS
   //-------------------------------------------------------------------------
