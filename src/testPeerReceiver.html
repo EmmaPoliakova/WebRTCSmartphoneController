@@ -6,7 +6,7 @@
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
         <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
-        <script src = "./connectionManager.js"> </script>
+        <script src = "./connectionManagerClass.js"> </script>
     </head>
 
     <body>
@@ -27,20 +27,24 @@
         <script>
             var popupBox = document.getElementById("qrbox");
             var code = document.getElementById("qrcode");
-            document.getElementById('stats').appendChild(stats.domElement);
-            managerInitialize();
-
-            //var qr = createQrCode("https://emmapoliakova.github.io/SmartphoneLeapMotion/sendScreen.html")
-            //code.appendChild(qr);
             
-            
-            el.addEventListener('data', function(e){
-                console.log(e.detail);
-            });
 
-            el.addEventListener('close', function(e){
-                console.log(e.detail);
-            });
+            var peer = new Peer(null, {
+                debug: 2
+            });   //create a new peerjs object
+
+            var cm = new ConnectionManager(peer);  //pass the peerjs object to the connectionManager class
+
+            var printData = (data) => {
+                console.log(data);
+            }
+
+            cm.registerCallback(printData); //print data anytime remote peer sends
+            /* optional: cm.registerCallback(label, function), label is to when the function should be called (open, data, close)
+            */
+
+            cm.createQrCode("hello", code); //pass url and the html elemet the code should be linked to 
+            
             
         </script>
     </body>
