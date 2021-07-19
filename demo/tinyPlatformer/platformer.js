@@ -2,6 +2,7 @@ function Start() { // module pattern
 
   el.addEventListener('data', function(e){
     current_move = e.detail[1];
+    console.log(current_move)
     if(current_move[0]=="s"){
       onkey(current_move[1], true);
     }

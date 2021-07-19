@@ -33,6 +33,11 @@ class ConnectionManager{
             var message = [self.remotePeers.indexOf(conn), data]  //send data received from phone/remote peer + the player number/ index from the peer list
             self.peerOnReceiveCallback(message);
         });
+
+        conn.on('close',function(){
+            console.log(self.remotePeers.indexOf(conn));
+            self.remotePeers.splice(self.remotePeers.indexOf(conn), 1);
+        });
       }
 
       createQrCode = (url, qrDomElement) => {
