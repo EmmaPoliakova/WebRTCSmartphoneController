@@ -9,3 +9,5 @@ Touch screen tower building with physics engine (04/07/21): https://emmapoliakov
 Touch screen tower building with physics engine - version 2, refactored (13/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemoV2.html
 
 Touch screen 3D racing game canvas/joystick (07/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacing.html
+
+Touch screen platformer(18/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/tinyPlatformer/index.html
