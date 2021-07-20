@@ -23,7 +23,7 @@ html, body {
     left:50%;
     transform:translate(-50%,-50%);
     grid-template-areas: 
-      ". . . grey1 . ."
+      "screen . . grey1 . ."
       ". . . grey2 . ."
       ". up . grey3 . ."
       "left middle right grey4 s1 s2"
@@ -65,6 +65,10 @@ html, body {
     height: 100%;
 }
 
+  .item-0 {
+    grid-area: screen;
+      
+  }
   .item-a {
     grid-area: grey1;
       
