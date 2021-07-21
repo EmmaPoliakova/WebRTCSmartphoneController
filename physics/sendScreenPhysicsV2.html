@@ -4,8 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" href="style.css">
-        <script src = "../src/peer.js"></script>
-        <script src = "../src/canvas.js"></script>
+
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
         
     </head>
@@ -13,14 +12,13 @@
     <body>
         <div id="ping" style='float: right;'></div>
         <canvas id="input_canvas" style="border:1px solid #000000;"></canvas>
-                          
+           
+        <script src = "../src/peer.js"></script>
+        <script src = "../src/canvas.js"></script>
         <script>         
-                            
-               
                 canvasReady("input_canvas"); 
                 peerInitialize();
-            
-           
+                
 
         </script>
     </body>

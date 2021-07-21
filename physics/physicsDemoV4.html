@@ -63,7 +63,7 @@
 
             //matter.js section
             var selected = null;
-            var selectedBody = [null, null];
+            var selectedBody = [1, 2];
             var peerCoordinates = [];
 
             var Engine = Matter.Engine,
@@ -103,30 +103,31 @@
             Runner.run(runner, engine);
 
             var allBodies = [];
+  
             // add bodies
             for (var i=0; i<5; i++){
                 var x = 300+i*50;
                 var y = 300+i*50;
                 var w = 50+i*10;
                 var h = 50+i*10;
-                var body = Bodies.rectangle(x, y, w, h, { friction: 1, render: { fillStyle: '#060a19' } });
+                var body = Bodies.rectangle(x, y, w, h, { slop: 0.5, friction: 1, frictionStatic: Infinity, render: { fillStyle: '#060a19' } });
                 Composite.add(world, [body]);
                 allBodies.push([[body.position.x,body.position.y],body]);
 
             }
 
+            
+
 
             Composite.add(world, [
             // walls
+           
             Bodies.rectangle(400, 0, 800, 50, { isStatic: true }),
             Bodies.rectangle(400, 600, 800, 50, { isStatic: true }),
             Bodies.rectangle(800, 300, 50, 600, { isStatic: true }),
             Bodies.rectangle(0, 300, 50, 600, { isStatic: true })
             ]);
-
-
-
-        
+    
             
             
 
@@ -153,20 +154,20 @@
                            break;
                        case "move":
                             drawPointer(tempctx[player], data[1][1]);
-                           if (selectedBody[player]!=null){
+                           if (selectedBody[0]==selectedBody[1]){
                                processCoordinates(data[1][1], selectedBody[player]);
                                
                            }
                            else{
                             findClosest(data[1][1], player);
+                            console.log(selectedBody)
                            }
                            break;
                        case "end":
                            if (selectedBody[player]!= null){
                                setPositions();
-                               //selectedBody[player].isStatic = false;
-                               selectedBody[player] = null;
-                               engine.world.gravity.y = 1;
+                               selectedBody[player].isStatic = false;
+                               selectedBody[player] = player;
                                tempctx[player].clearRect(0, 0, canvas1.width, canvas1.height);
                            }
                            break; 
@@ -198,9 +199,9 @@
                     
                             //selected = allBodies.indexOf(val);
                             selectedBody[player] = val[1];
-                            engine.world.gravity.y = 0.3;
-                            //selectedBody[player].isStatic = true;
-                            console.log(selectedBody)
+                            selectedBody[player].isStatic = true;
+                            //selectedBody[player].chamfer = 10;
+                            
                         }
                     }
 
@@ -208,8 +209,12 @@
                 }
 
                 function processCoordinates(coordinates, body) {
-                    
+    
                     Body.setPosition(body, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
+            
+
+                    
+     
                     
                 }
 
