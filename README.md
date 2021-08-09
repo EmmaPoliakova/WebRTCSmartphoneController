@@ -7,7 +7,7 @@ Tiny platformer game with NES controller. Try the [tiny platformer](https://emma
 Using Matterjs to create a world with stacking blocks and a canvas on the phone to move the blocks around. Try the [physics simulator](https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemoV3.html)
 <img src="media/physics1.gif" width="1000" />
 
-Multiplayer tower building, requires both players to carry each block. Try the [cooperative physics simulator](https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemoV3.html)
+Multiplayer tower building, requires both players to carry each block. Try the [cooperative physics simulator](https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemoV4.html)
 <img src="media/physics2.gif" width="1000" />
 
 Video stream hand tracking to control the browser canvas. Try the [hand tracking](https://emmapoliakova.github.io/SmartphoneLeapMotion/handtracking/receiveVideo.html)
