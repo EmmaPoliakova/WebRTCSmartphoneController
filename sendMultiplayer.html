@@ -12,7 +12,7 @@
         
 
          <div class="container">
-             <canvas class="input_canvas"></canvas>
+             <canvas class="input_canvas" style="background-color: aliceblue;"></canvas>
                           
          </div>
 
@@ -45,13 +45,7 @@
                 canvasElement.setAttribute('width', window.innerWidth);
                 canvasElement.setAttribute('height', window.innerHeight);
                 var canvasCtx = canvasElement.getContext('2d');
-                if (qrID == 1){
-                    canvasCtx.fillstyle = 'red';
-                }
-                else{
-                    canvasCtx.fillstyle = 'yellow';
-                }
-                canvasCtx.fillRect(0,0,canvasElement.width,canvasElement.height);
+
                    
 
                 function start_handler(ev) {
@@ -115,6 +109,16 @@
                     peer = new Peer(null, {
                         debug: 2
                     });
+
+                    if (qrID == 1){
+                    canvasCtx.fillStyle = '#f09292';
+                    canvasCtx.fillRect(0,0,canvasElement.width,canvasElement.height);
+                    }
+                    else{
+                        
+                        canvasCtx.fillStyle = '#edec95';
+                        canvasCtx.fillRect(0,0,canvasElement.width,canvasElement.height);
+                    }
 
                     peer.on('open', function (id) {
                         // Workaround for peer.reconnect deleting previous id
