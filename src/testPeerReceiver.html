@@ -45,7 +45,11 @@
 
             cm.createQrCode("hello", code); //pass url and the html elemet the code should be linked to 
             
-            
+            var arr = {};
+            arr["hello"] = "hi";
+            console.log("hello" in arr)
+
+            console.log(arr);
         </script>
     </body>
 

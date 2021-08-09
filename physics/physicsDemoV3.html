@@ -50,21 +50,22 @@
             var ctx1 = canvas1.getContext('2d');
             ctx1.fillStyle = "red";
 
-            var canvas2 = document.getElementById("layer2");
-            var ctx2 = canvas2.getContext('2d');
-            ctx2.fillStyle = "yellow";
 
-            function drawPointer(ctx, coordinates){
-                ctx.clearRect(0, 0, canvas1.width, canvas1.height);
-                ctx.beginPath();
-                ctx.arc(coordinates[0][0]*canvas1.width,coordinates[0][1]*canvas1.height,5,0,Math.PI*2);
-                ctx.fill();
+            function drawPointer(coordinates){
+                ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+                ctx1.beginPath();
+                ctx1.arc(coordinates[0][0]*canvas1.width,coordinates[0][1]*canvas1.height,5,0,Math.PI*2);
+                ctx1.fill();
+
+                if (selectedBody != null){
+                    ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+                }
             }
 
             //matter.js section
-            var selected = null;
-            var selectedBody = [null, null];
-            var peerCoordinates = [];
+            var offset = null;
+            var selectedBody = null;
+            var coordinates = null;
 
             var Engine = Matter.Engine,
             Render = Matter.Render,
@@ -138,42 +139,38 @@
                 el.addEventListener('open', function(e){
                     popupBox.style.display = "none";
                     setPositions();
+                    processCoordinates();
                 });
                             
                 el.addEventListener('data', function(e){
                     var data = e.detail;
                     var player = data[0];
-                    var tempctx = [ctx1, ctx2];
                    
                    switch(data[1][0]) {
                        case "start":
                            findClosest(data[1][1], player);
-                           drawPointer(tempctx[player],data[1][1]);
+                           drawPointer(data[1][1]);
+                           coordinates = data[1][1];
                           
                            break;
-                       case "move":
-                            drawPointer(tempctx[player], data[1][1]);
-                           if (selectedBody[player]!=null){
-                               processCoordinates(data[1][1], selectedBody[player]);
-                               
-                           }
-                           else{
+                       case "move": 
+                            coordinates = data[1][1];
+                           if (selectedBody == null){
                             findClosest(data[1][1], player);
+                            drawPointer(data[1][1]);
                            }
+                             
                            break;
                        case "end":
-                           if (selectedBody[player]!= null){
+                           ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+                           if (selectedBody!= null){
+ 
                                setPositions();
-                               //selectedBody[player].isStatic = false;
-                               selectedBody[player] = null;
-                               engine.world.gravity.y = 1;
-                               tempctx[player].clearRect(0, 0, canvas1.width, canvas1.height);
+                               selectedBody.render.fillStyle = '#060a19';
+                               selectedBody = null;
                            }
                            break; 
                    }             
-                   
-     
-
                 });
 
 
@@ -195,22 +192,24 @@
                     for (var val of allBodies){
                         
                         if (Matter.Vertices.contains(val[1].vertices, { x: coordinates[0][0]*800, y: coordinates[0][1]*600})){
-                    
-                            //selected = allBodies.indexOf(val);
-                            selectedBody[player] = val[1];
-                            engine.world.gravity.y = 0.3;
-                            //selectedBody[player].isStatic = true;
-                            console.log(selectedBody)
+                            offset = [val[1].position.x- coordinates[0][0]*800, val[1].position.y-coordinates[0][1]*600]
+                            selectedBody = val[1];
+                            selectedBody.render.fillStyle = 'red';
+                            ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+
+
                         }
                     }
 
 
                 }
 
-                function processCoordinates(coordinates, body) {
+                function processCoordinates() {
                     
-                    Body.setPosition(body, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
-                    
+                    if (selectedBody != null){
+                        Body.setPosition(selectedBody, { x: Math.round(coordinates[0][0]*800 + offset[0]), y: Math.round(coordinates[0][1]*600 + offset[1])});
+                    }
+                    requestAnimationFrame(processCoordinates);
                 }
 
 

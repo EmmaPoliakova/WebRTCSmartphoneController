@@ -64,7 +64,7 @@
             //matter.js section
             var selected = null;
             var selectedBody = [null, null];
-            var peerCoordinates = [];
+            var peerCoordinates = [null, null];
 
             var Engine = Matter.Engine,
             Render = Matter.Render,
@@ -79,7 +79,15 @@
 			// document.getElementById('stats').appendChild(stats.domElement)
 
             // create engine
-            var engine = Engine.create(),
+            
+               
+
+                var engine = Engine.create(document.body, {
+                    world: {
+                        gravity: { x:0, y:0.017 }
+                    }
+                });
+
                 world = engine.world;
 
             // create renderer
@@ -108,8 +116,8 @@
             for (var i=0; i<5; i++){
                 var x = 300+i*50;
                 var y = 300+i*50;
-                var w = 50+i*10;
-                var h = 50+i*10;
+                var w = 30;
+                var h = 30;
                 var body = Bodies.rectangle(x, y, w, h, { slop: 0.5, friction: 1, frictionStatic: Infinity, render: { fillStyle: '#060a19' } });
                 Composite.add(world, [body]);
                 allBodies.push([[body.position.x,body.position.y],body]);
@@ -134,11 +142,10 @@
              //Create the Peer object for our end of the connection + listeners.
              
                 managerInitialize("https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/sendScreenPhysicsV2.html" ,qrcode, popupBox);
-                
+                processCoordinates();
 
                 el.addEventListener('open', function(e){
                     popupBox.style.display = "none";
-                    setPositions();
                 });
                             
                 el.addEventListener('data', function(e){
@@ -149,23 +156,23 @@
                    
                    switch(data[1][0]) {
                        case "start":
-                       var body = Bodies.rectangle(coordinates[0][0]*800, coordinates[0][1]*600, 30, 30, {friction: 1, frictionStatic: Infinity, render: { fillStyle: '#060a19' } });
-                        Composite.add(world, [body]);
-                        selectedBody[data[0]]=body;
+                            var body = Bodies.rectangle(coordinates[0][0]*800, coordinates[0][1]*600, 60, 60, {friction: 1, frictionStatic: Infinity,  render: { fillStyle: '#060a19' } });
+                            Composite.add(world, [body]);
+                            selectedBody[data[0]]=body;
+                            peerCoordinates[data[0]] = coordinates;
 
-                          
                            break;
+
                        case "move":
-                            
-                               processCoordinates(data[1][1], selectedBody[player]);
-                               
-                           break;
+                            peerCoordinates[data[0]] = coordinates;
+             
+                            break;
                        case "end":
                            
-                               setPositions();
-                               Matter.World.remove(world, selectedBody[player]);
-                               selectedBody[player] = player;
-                               
+                             
+                            Matter.World.remove(world, selectedBody[player]);
+                            selectedBody[player] = null;
+                            peerCoordinates[data[0]] = null;
                                
                            break; 
                    }             
@@ -181,34 +188,17 @@
                
 
 
-                //functions to handle 
-                function setPositions(){
-                    for (var i = 0; i<allBodies.length; i++){
-                        var body = allBodies[i][1];
-                        allBodies[i][0] = [body.position.x,body.position.y];
-                    }
-                }
                 
-                function findClosest(coordinates, player){
-                    for (var val of allBodies){
-                        
-                        if (Matter.Vertices.contains(val[1].vertices, { x: coordinates[0][0]*800, y: coordinates[0][1]*600})){
+
+
+                function processCoordinates() {
                     
-                            //selected = allBodies.indexOf(val);
-                            selectedBody[player] = val[1];
-                            selectedBody[player].isStatic = true;
-                            //selectedBody[player].chamfer = 10;
-                            
+                    for (var i = 0; i<2; i++ ){
+                        if (selectedBody[i] != null){
+                        Body.setPosition(selectedBody[i], { x: Math.round(peerCoordinates[i][0][0]*800), y: Math.round(peerCoordinates[i][0][1]*600) });
                         }
                     }
-
-
-                }
-
-                function processCoordinates(coordinates, body) {
-    
-                    Body.setPosition(body, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
-            
+                    requestAnimationFrame(processCoordinates);
 
                     
      

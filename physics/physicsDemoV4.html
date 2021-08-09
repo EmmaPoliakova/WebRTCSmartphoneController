@@ -63,8 +63,8 @@
 
             //matter.js section
             var selected = null;
-            var selectedBody = [1, 2];
-            var peerCoordinates = [];
+            var selectedBody = [0, 1];
+            var peerCoordinates = [0, 1];
 
             var Engine = Matter.Engine,
             Render = Matter.Render,
@@ -112,6 +112,7 @@
                 var h = 50+i*10;
                 var body = Bodies.rectangle(x, y, w, h, { slop: 0.5, friction: 1, frictionStatic: Infinity, render: { fillStyle: '#060a19' } });
                 Composite.add(world, [body]);
+                
                 allBodies.push([[body.position.x,body.position.y],body]);
 
             }
@@ -139,6 +140,8 @@
                 el.addEventListener('open', function(e){
                     popupBox.style.display = "none";
                     setPositions();
+                    processCoordinates();
+                    
                 });
                             
                 el.addEventListener('data', function(e){
@@ -150,26 +153,28 @@
                        case "start":
                            findClosest(data[1][1], player);
                            drawPointer(tempctx[player],data[1][1]);
+                           peerCoordinates[player] = data[1][1];
                           
                            break;
                        case "move":
                             drawPointer(tempctx[player], data[1][1]);
-                           if (selectedBody[0]==selectedBody[1]){
-                               processCoordinates(data[1][1], selectedBody[player]);
-                               
+                            peerCoordinates[player] = data[1][1];
+
+                           if (selectedBody[player] == player){
+
+                                findClosest(data[1][1], player);
+                            
                            }
-                           else{
-                            findClosest(data[1][1], player);
-                            console.log(selectedBody)
-                           }
+
                            break;
                        case "end":
-                           if (selectedBody[player]!= null){
+                     
                                setPositions();
-                               selectedBody[player].isStatic = false;
+                               //selectedBody[player].isStatic = false;
                                selectedBody[player] = player;
+                               peerCoordinates[player] = player;
                                tempctx[player].clearRect(0, 0, canvas1.width, canvas1.height);
-                           }
+                           
                            break; 
                    }             
                    
@@ -197,27 +202,44 @@
                         
                         if (Matter.Vertices.contains(val[1].vertices, { x: coordinates[0][0]*800, y: coordinates[0][1]*600})){
                     
-                            //selected = allBodies.indexOf(val);
                             selectedBody[player] = val[1];
-                            selectedBody[player].isStatic = true;
-                            //selectedBody[player].chamfer = 10;
-                            
+                        
                         }
                     }
 
 
                 }
+                
+                function processCoordinates() {
 
-                function processCoordinates(coordinates, body) {
-    
-                    Body.setPosition(body, { x: Math.round(coordinates[0][0]*800), y: Math.round(coordinates[0][1]*600) });
+                    if (selectedBody[0]==selectedBody[1]){
+                        var body = selectedBody[0];
+                        //selectedBody[0].isStatic = true;
+                        var center = body.position;
+                        var corner = body.vertices[0]
+                        var radius = Math.sqrt( (center.x - corner.x)*(center.x - corner.x) + (center.y - corner.y)*(center.y - corner.y)); 
+                        if(check_a_point(peerCoordinates[0][0][0]*800, peerCoordinates[0][0][1]*600, center.x, center.y, radius) && check_a_point(peerCoordinates[1][0][0]*800, peerCoordinates[1][0][1]*600, center.x, center.y, radius)){
+                            Body.setPosition(body, { x: Math.round(((peerCoordinates[0][0][0]+peerCoordinates[1][0][0])/2)*800), y: Math.round(((peerCoordinates[0][0][1]+peerCoordinates[1][0][1])/2)*600) });
+                        }
+                    }
             
-
+                    requestAnimationFrame(processCoordinates);
                     
      
                     
                 }
 
+                function check_a_point(a, b, x, y, r) {
+                    var dist_points = (a - x) * (a - x) + (b - y) * (b - y);
+                    r *= r;
+
+                    if (dist_points < r) {
+                     
+                        return true;
+                    }
+
+                    return false;
+                    }
 
 
     

@@ -126,7 +126,7 @@ joystick.on("move", function (evt, data) {
             var angle = "straight";
         }
         var coordinates = [((data.position.x - joystickX)/100), angle];
-        conn.send(coordinates);
+        conn.send(data);
         prevPing = Date.now();
     
 })

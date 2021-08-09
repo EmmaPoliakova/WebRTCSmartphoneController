@@ -73,7 +73,7 @@
              
                 function initialize() {
                 // Create own peer object with connection to shared PeerJS server
-                peer = new Peer(null, {
+                peer = new Peer(123456, {
                     debug: 2
                 });
 
@@ -139,7 +139,8 @@
              * Defines callbacks to handle incoming data and connection events.
              */
             function ready() {
-                conn.on('data', function (data) {               
+                conn.on('data', function (data) {   
+                    console.log(data);            
                     
                     mouseX = (c.width*data[0])/window.innerWidth*2 - 1;
                     //console.log(mouseX);
