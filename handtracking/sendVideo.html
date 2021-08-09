@@ -6,6 +6,14 @@
         <link rel="stylesheet" href="../style.css">
     </head>
     <body>
+               
+            </tr>
+            <tr>
+                <td><div id="status" class="status"></div></td>
+                <td><div class="message" id="message"></div></td>
+            </tr>
+
+        </table>
         <video id="input_video"></video>
 
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
@@ -18,8 +26,7 @@
                 var recvIdInput = document.getElementById("receiver-id");
                 var status = document.getElementById("status");
                 var message = document.getElementById("message");
-                var connectButton = document.getElementById("connect-button");
-                
+               
 
                 const queryString = window.location.search;             
                 const urlParams = new URLSearchParams(queryString);
