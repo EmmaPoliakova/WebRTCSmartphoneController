@@ -9,6 +9,8 @@ function canvasReady(canvas){
     canvasCtx = canvasElement.getContext('2d');
     document.addEventListener("DOMContentLoaded", set_handlers);
 
+    
+
 }
 
 function start_handler(ev) {
