@@ -14,7 +14,11 @@ Touch screen platformer(18/07/21): https://emmapoliakova.github.io/SmartphoneLea
 
 
 Using Matterjs to create a world with stacking blocks and a canvas on the phone to move the blocks around. Try the [physics simulator]( https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemoV3.html)
-<img src="media/physics1player.gif" width="1000" />
+<img src="media/physics1.gif" width="1000" />
 
 Tiny platformer game with NES controller. Try the [tiny platformer](https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/tinyPlatformer/index.html)
 <img src="media/tiny_platformer.gif" width="750" />
+
+3D racing game controlled with phone joystick. Try the [tiny platformer](https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacing.html)
+<img src="media/3dracer.gif" width="1000" />
+
