@@ -12,7 +12,7 @@
         
 
          <div class="container">
-             <canvas class="input_canvas" style="background-color: rgb(164, 206, 192);"></canvas>
+             <canvas class="input_canvas"></canvas>
                           
          </div>
 
@@ -45,6 +45,13 @@
                 canvasElement.setAttribute('width', window.innerWidth);
                 canvasElement.setAttribute('height', window.innerHeight);
                 var canvasCtx = canvasElement.getContext('2d');
+                if (qrID == 1){
+                    canvasCtx.fillstyle = 'red';
+                }
+                else{
+                    canvasCtx.fillstyle = 'yellow';
+                }
+                canvasCtx.fillRect(0,0,canvasElement.width,canvasElement.height);
                    
 
                 function start_handler(ev) {
