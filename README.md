@@ -10,18 +10,22 @@ Other tools to create the demos themselves are [Matterjs](https://brm.io/matter-
 
 ## How it works ##
 
-The whole process requires only 2 steps:
+The whole process requires only 3 steps:
 
 ### 1. Open the website ###
 Navigate to the PC side website. This will create a peer listening for connection and show a QRcode with a unique ID. 
 
+<img src="media/searchbar.gif" width="900" />
+
 ### 2. Scan the QRcode ###
 Scan the QRcode with your smartphone. Two websites communicate by eastablishing peer to peer connection. The QRcode will provide all necessary details for the phone to connect to the PC.
 
-<img src="media/QR-scan3.gif" width="1000" />
+<img src="media/QR-scan3.gif" width="900" />
 
 ### 3. Control the website ###
-After opening the QRcode URL you are ready to use your smartphone as a controller. No extra installation required. The smartphone will send data from the controller to the PC browser which will process them and turns them into real actions.
+After opening the QRcode URL you are ready to use your smartphone as a controller. No extra installation required. The smartphone browser will package your input and send it to the PC browser which will process it and turn it into real actions.
+
+<img src="media/data.gif" width="900" />
 
 
 ## Demos ##
@@ -30,7 +34,7 @@ After opening the QRcode URL you are ready to use your smartphone as a controlle
 <img src="media/tiny_platformer.gif" width="750" />
 
 [3D racing](https://frankforce.com/how-i-made-a-3d-game-in-only-2k-of-javascript/) game controlled with phone joystick. Use the joystick to steer, brake and jump. How many points can you score before the time runs out? Try the [3D Racer](https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacing.html)
-<img src="media/3dracer.gif" width="1000" />
+<img src="media/racing.gif" width="1000" />
 
 A physics simulator created with Matterjs. Use the touchpad to select and stack blocks. Try the [physics simulator](https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemoV3.html)
 <img src="media/physics1.gif" width="1000" />
