@@ -1,14 +1,14 @@
-Hand tracking (25/06/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/handtracking/receiveVideo.html
+Hand tracking (25/06/21): https://emmapoliakova.github.io/WebRTCSmartphoneController/handtracking/receiveVideo.html
 
-Touch screen - 1 phone (29/06/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/receiveScreen.html
+Touch screen - 1 phone (29/06/21): https://emmapoliakova.github.io/WebRTCSmartphoneController/receiveScreen.html
 
-Touch screen - 2 phones (02/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/receiveMultiple.html
+Touch screen - 2 phones (02/07/21): https://emmapoliakova.github.io/WebRTCSmartphoneController/receiveMultiple.html
 
-Touch screen tower building with physics engine (04/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemo.html
+Touch screen tower building with physics engine (04/07/21): https://emmapoliakova.github.io/WebRTCSmartphoneController/physics/physicsDemo.html
 
-Touch screen tower building with physics engine - version 2, refactored (13/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemoV2.html
+Touch screen tower building with physics engine - version 2, refactored (13/07/21): https://emmapoliakova.github.io/WebRTCSmartphoneController/physics/physicsDemoV2.html
 
-Touch screen 3D racing game canvas/joystick (07/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacing.html
+Touch screen 3D racing game canvas/joystick (07/07/21): https://emmapoliakova.github.io/WebRTCSmartphoneController/demo/3dRacing.html
 
-Touch screen platformer(18/07/21): https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/tinyPlatformer/index.html
+Touch screen platformer(18/07/21): https://emmapoliakova.github.io/WebRTCSmartphoneController/demo/tinyPlatformer/index.html
 

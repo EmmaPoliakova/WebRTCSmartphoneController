@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width">
-        <link rel="stylesheet" href="../style.css">
+        <link rel="stylesheet" href="./tinyPlatformer/style.css">
         <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
         
@@ -20,20 +20,7 @@
                     <div id="qrbox" class="modal">
                         <div class="modal-content">
                             <p > Scan a QRcode to connect your device </p>
-                            <div class="wrap">
-            
-            
-                                <div class="fleft">
-                                    <p > Canvas </p>
-                                    <div id="qrcode1"></div>
-                                </div>
-            
-                                <div class="fright">
-                                    <p > Joystick </p>
-                                    <div id="qrcode2"></div>
-                                </div>
-            
-                        </div>
+                            <div id="qrcode2"></div>
                       </div>
                         
                     </div>
@@ -73,7 +60,7 @@
              
                 function initialize() {
                 // Create own peer object with connection to shared PeerJS server
-                peer = new Peer(123456, {
+                peer = new Peer(null, {
                     debug: 2
                 });
 
@@ -89,8 +76,7 @@
                     console.log('ID: ' + peer.id);
                     recvId.innerHTML = "ID: " + peer.id;
                     status.innerHTML = "Awaiting connection...";
-                    new QRCode(document.getElementById("qrcode1"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacingCanvasController.html?id=" + peer.id);
-                    new QRCode(document.getElementById("qrcode2"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacingJoystickController.html?id=" + peer.id);
+                    new QRCode(document.getElementById("qrcode2"), "https://emmapoliakova.github.io/WebRTCSmartphoneController/demo/3dRacingJoystickController.html?id=" + peer.id);
                     popupBox.style.display = "block";
                 });
 
@@ -108,7 +94,6 @@
                     console.log("Connected to: " + conn.peer);
                     status.innerHTML = "Connected";
                     popupBox.style.display = "none";
-                    Update();
                     ready();
                 });
 
@@ -167,6 +152,7 @@
             }
            
                 initialize();
+                
 
 
 
@@ -640,7 +626,7 @@
 
                 }
 
-                //Update(); // kick off update loop
+                Update(); // kick off update loop
                 
 
         </script>

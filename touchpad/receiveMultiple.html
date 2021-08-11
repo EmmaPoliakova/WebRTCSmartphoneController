@@ -69,8 +69,8 @@
             // Get your local peer id
             peer.on('open', function(id) {
             console.log('My peer ID is: ' + id);
-            new QRCode(document.getElementById("qrcode1"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendMultiplayer.html?id=" + peer.id+ "&qr=1");
-            new QRCode(document.getElementById("qrcode2"), "https://emmapoliakova.github.io/SmartphoneLeapMotion/sendMultiplayer.html?id=" + peer.id + "&qr=2");
+            new QRCode(document.getElementById("qrcode1"), "https://emmapoliakova.github.io/WebRTCSmartphoneController/sendMultiplayer.html?id=" + peer.id+ "&qr=1");
+            new QRCode(document.getElementById("qrcode2"), "https://emmapoliakova.github.io/WebRTCSmartphoneController/sendMultiplayer.html?id=" + peer.id + "&qr=2");
             qr.style.display = "block";
             
             });
