@@ -30,20 +30,20 @@ After opening the QRcode URL you are ready to use your smartphone as a controlle
 
 ## Demos ##
 
-[Tiny platformer](https://codeincomplete.com/articles/tiny-platformer/) game with NES controller. Collect the gold coins and jump on the enemies to beat the level. Try the [tiny platformer](https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/tinyPlatformer/index.html)
-<img src="media/tiny_platformer.gif" width="750" />
+Tiny platformer game with NES controller. Collect the gold coins and jump on the enemies to beat the level. Try the [tiny platformer](https://emmapoliakova.github.io/WebRTCSmartphoneController/demo/tinyPlatformer/index.html)
+<img src="media/platform-b.gif" width="1000" />
 
-[3D racing](https://frankforce.com/how-i-made-a-3d-game-in-only-2k-of-javascript/) game controlled with phone joystick. Use the joystick to steer, brake and jump. How many points can you score before the time runs out? Try the [3D Racer](https://emmapoliakova.github.io/SmartphoneLeapMotion/demo/3dRacing.html)
-<img src="media/racing.gif" width="1000" />
+3D racing game controlled with phone joystick. Use the joystick to steer, brake and jump. How many points can you score before the time runs out? Try the [3D Racer](https://emmapoliakova.github.io/WebRTCSmartphoneController/demo/3dRacing.html)
+<img src="media/racing.gif" width="1050" />
 
-A physics simulator created with Matterjs. Use the touchpad to select and stack blocks. Try the [physics simulator](https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemoV3.html)
-<img src="media/physics1.gif" width="1000" />
+A physics simulator created with Matterjs. Use the touchpad to select and stack blocks. Try the [physics simulator](https://emmapoliakova.github.io/WebRTCSmartphoneController/physics/physicsDemoV3.html)
+<img src="media/physics-b.gif" width="1000" />
 
-Multiplayer tower building. This demo requires two people to connect. Both players will need to cooperate by selecting the same block to be able to carry it. Try the [cooperative physics simulator](https://emmapoliakova.github.io/SmartphoneLeapMotion/physics/physicsDemoV4.html)
-<img src="media/physics2.gif" width="1000" />
+Multiplayer tower building. This demo requires two people to connect. Both players will need to cooperate by selecting the same block to be able to carry it. Try the [cooperative physics simulator](https://emmapoliakova.github.io/WebRTCSmartphoneController/physics/physicsDemoV4.html)
+<img src="media/physics2-b.gif" width="1000" />
 
-This demo lets you stream a video into browers that will track your hand to control the ball. Try the [hand tracking](https://emmapoliakova.github.io/SmartphoneLeapMotion/handtracking/receiveVideo.html)
-<img src="media/hand.gif" width="1000" />
+This demo lets you stream a video into browers that will track your hand to control the ball. Try the [hand tracking](https://emmapoliakova.github.io/WebRTCSmartphoneController/handtracking/receiveVideo.html)
+<img src="media/hand-b.gif" width="1000" />
 
 ## Future plans ## 
 I am currently working on developing an open source library that will offer tools to create an easy peer connection and process the incoming data. Another plan is to expand the range of controller types offered.  
