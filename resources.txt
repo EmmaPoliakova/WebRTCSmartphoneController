@@ -1,0 +1,11 @@
+Games: 
+Tiny platformer by: https://codeincomplete.com/articles/tiny-platformer/
+3D racing by: https://frankforce.com/how-i-made-a-3d-game-in-only-2k-of-javascript/
+
+Vectors: 
+Monitor:https://icon-library.com/icon/monitor-icon-png-22.html
+Phone:https://flyclipart.com/smartphone-icon-transparent-png-smartphone-icon-png-318663
+Browser: "https://www.vecteezy.com/free-vector/web-browser-window">
+
+Gifs:
+Qrcode scan: https://www.swipedon.com/hs-fs/hubfs/QR-scan3.gif?width=800&name=QR-scan3.gif

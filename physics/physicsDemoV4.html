@@ -138,7 +138,9 @@
                 
 
                 el.addEventListener('open', function(e){
-                    popupBox.style.display = "none";
+                    if (remotePeerIds.length == 2){
+                        popupBox.style.display = "none";
+                    }
                     setPositions();
                     processCoordinates();
                     
