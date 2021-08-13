@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+  <meta charset="utf-8" />
+  <script src="https://unpkg.com/nipplejs@0.9.0/dist/nipplejs.js"></script>
+  <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <script src = "../src/connectionManagerClass.js"> </script>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    
+  </style>
+</head>
+
+<body>
+
+  <center>
+    <div id="qrbox" class="modal">
+
+        <div class="modal-content">
+            <p> Scan the qr code to connect your device.</p>
+            <div id="qrcode"></div>
+        
+        </div>
+      
+      </div>
+    </center>
+
+  <div  id="stack" style="overflow: hidden">
+
+
+    <canvas id="canvas" width="5000px" height="1500px" ></canvas>
+    <canvas id="planets" width="5000px" height="1500px" ></canvas>
+
+  </div>
+
+
+
+  <script>
+
+//peer 
+var peer = new Peer(null, {
+                debug: 2
+            });   //create a new peerjs object
+
+var cm = new ConnectionManager(peer);  //pass the peerjs object to the connectionManager class
+var popupBox = document.getElementById("qrbox");
+var code = document.getElementById("qrcode");
+
+cm.createQrCode("https://emmapoliakova.github.io/WebRTCSmartphoneController/fulldemo/spaceshipController.html", code); 
+popupBox.style.display = 'block';
+            
+
+
+var selectAction = (message) => {
+
+    var data = message[1]
+
+    if(data.type == 'joystick'){
+      if (data.data.type == 'start'){
+        Start();
+      }
+      else if (data.data.type == 'move'){
+        Move(data.data.degrees);
+      }
+      else if (data.data.type == 'end'){
+        End();
+      }
+    }
+
+
+    else if (data.type == 'button'){
+      console.log(data.data)
+      changeSpaceship(data.data)
+    }
+
+
+}
+
+cm.registerCallback(selectAction); 
+            
+//space and spaceship
+var canvas = document.getElementById("canvas");
+var context = canvas.getContext('2d');
+var ctx = canvas.getContext("2d");
+
+//planets
+var planets = document.getElementById("planets");
+var p_ctx = planets.getContext('2d');
+var positions = [[],[300, 300], [4300,800], [3200, 300], [1400, 700], [2000, 200]]
+var planetw = 200;
+var planeth = 200;
+
+
+function createImage(i){   // load an image function 
+                           // creates a new i each time it is called
+    var img = new Image();  // create a new image variable 
+    var name = "./img/P" + i + ".jpg"
+    img.src = name;
+    img.onload = function(){  // now the onload will have the correct variables 
+         p_ctx.drawImage(img,positions[i][0],positions[i][1],planetw, planeth);
+    } 
+ }
+for (var i = 1; i<=5; i++){
+  createImage(i);
+}
+
+//stars
+var background = new Image();
+  background.src = "./img/space.jpg";
+
+//spaceship
+var image = new Image();
+  image.src = "./img/spaceship5off.jpg";
+
+
+var dragging = false; // move the background
+var move = false;  //move the spaceship
+var velocity = 10;  //speed of the ship
+
+var marginLeft = 0; //canvas scroll start position
+var marginTop = 0;
+
+var xunits = 0; //add to x and y to move the ship and scroll 
+var yunits = 0;
+var xunitsscroll = 0;
+var yunitsscroll = 0;
+
+
+var x = 500 // starting positionf of the spaceship
+var y = -200
+
+
+var width = 200 //size and rotation of the space ship picture
+var height = 200
+var rotation = 0
+
+var spaceships = {1:{on:'./img/spaceship1on.jpg', off:'./img/spaceship1off.jpg'}, 2:{on:'./img/spaceship2on.jpg', off:'./img/spaceship2off.jpg'}, 3:{on:'./img/spaceship3on.jpg', off:'./img/spaceship3off.jpg'}, 4:{on:'./img/spaceship4on.jpg', off:'./img/spaceship4off.jpg'}, 5:{on:'./img/spaceship5on.jpg', off:'./img/spaceship5off.jpg'}, 6:{on:'./img/spaceship6on.jpg', off:'./img/spaceship6off.jpg'}} // available ships
+var selectedon = "./img/spaceship5on.jpg";
+var selectedoff = "./img/spaceship5off.jpg"
+var window_width = window.innerWidth
+var window_height = window.innerHeight
+
+
+// Make sure the image is loaded first otherwise nothing will draw.
+  background.onload = function(){
+      context.drawImage(background, 0,0, canvas.width, canvas.height );   
+
+      //draw the spaceship
+      ctx.drawImage(
+        image,
+        500, 200,
+        width, height / 2
+        )
+
+  }
+
+  function draw() {
+    if (cm.remotePeers.length>0){
+      popupBox.style.display = 'none';
+    }
+    if (move){
+      if (x+xunits>100 && x+xunits<4900){
+        x += xunits;
+      }
+      if(y + yunits < -100 && y+yunits > - 1150){
+        y += yunits;
+      }
+
+      //console.log("x: " + x + " y: " + y)
+   
+      //ctx.clearRect(0,0,canvas1.width,canvas1.height);
+      ctx.drawImage(background, 0,0, canvas.width, canvas.height );
+      ctx.translate( x, -y )
+      ctx.rotate( rotation  )
+      ctx.drawImage(
+        image,
+        - width/2, -height/2,
+        width, height / 2
+        )
+      ctx.rotate( -rotation  )
+      ctx.translate( -x, y )
+      
+    }
+    requestAnimationFrame(draw);
+  }
+
+
+function scrollCamera(){
+  if (dragging) {
+        
+        if (marginLeft - xunitsscroll < 0 && marginLeft - xunitsscroll >-3500){
+          marginLeft -= xunitsscroll;
+        }
+
+        if (marginTop + yunitsscroll < 0 && marginTop + yunitsscroll >-500){
+          marginTop += yunitsscroll;
+        }
+        
+          canvas.style.marginLeft = marginLeft + "px";
+          canvas.style.marginTop = marginTop + "px";
+
+          planets.style.marginLeft = marginLeft + "px";
+          planets.style.marginTop = marginTop + "px";
+    }
+    requestAnimationFrame(scrollCamera);
+}
+
+function Move(degrees) {
+
+rotation = (360 - degrees)*Math.PI/180;
+xunits = Math.cos(degrees*Math.PI/180) * 6;
+yunits = Math.sin(degrees*Math.PI/180) * 6;
+
+xunitsscroll = Math.cos(degrees*Math.PI/180) * 5;
+yunitsscroll = Math.sin(degrees*Math.PI/180) * 5;
+ 
+}
+
+function Start() {
+dragging = true; 
+move = true;
+image.src = selectedon;
+width += 100;
+}
+
+function End() {
+
+image.src = selectedoff;
+
+dragging = false;
+move = false; 
+
+width -= 100;
+
+changePicture();
+
+}
+
+function changeSpaceship(num){
+
+selectedon = spaceships[num].on
+selectedoff = spaceships[num].off
+
+console.log(selectedon + " "+ selectedoff)
+image.src = selectedoff;
+image.onload = function(){
+  changePicture();
+}
+}
+
+function changePicture(){
+  ctx.drawImage(background, 0,0, canvas.width, canvas.height);
+  ctx.translate( x, -y )
+  ctx.rotate( rotation  )
+  ctx.drawImage(
+    image,
+    - width/2, -height/2,
+    width, height / 2
+    )
+  ctx.rotate( -rotation  )
+  ctx.translate( -x, y )
+}
+
+scrollCamera();
+draw();
+  </script>
+
+</body>
+</html>
