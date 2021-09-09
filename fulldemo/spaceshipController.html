@@ -12,6 +12,7 @@
                 overflow:hidden;
                 background-color: #282145;
             }
+            
             canvas {
                 padding: 0;
                 margin: auto;
@@ -26,10 +27,11 @@
         
     </head>
     <body>
-            <button id="screenButton" onclick="switchScreen()" style = "background: rgb(66, 64, 64); padding:2px; margin:2px; border: none;">  <img id="screenPic" src="img/open.png"  width="25" height="25"> </button></div>
+           
             <div id="zone_joystick"></div>
 
-            <canvas id = "canvas" width = "640px" height = "400"></canvas>
+            <canvas id = "canvas" width = "640px" height = "400"  style="z-index:1"></canvas>
+            <button id="screenButton" onclick="switchScreen()" style = "background: rgb(66, 64, 64); padding:2px; margin:2px; border: none; z-index:2; position:absolute;">  <img id="screenPic" src="img/open.png"  width="25" height="25"> </button>
         
         
             <script>
@@ -54,11 +56,6 @@
 
                 background.onload = function(){
                     ctx.drawImage(background, 0,0, canvas.width, canvas.height );  
-
-                    ctx.drawImage(land, 140, 300, 75, 75); 
-
-                    ctx.drawImage(info, canvas.width - 53, 105, 40, 40); 
-
                     for (i = 0; i<6; i++){
                     ctx.fillStyle = colors[i];
                     ctx.beginPath();
@@ -68,7 +65,14 @@
                     buttons[188][i+1] = [154 + i*65, 188, 154 + i*65+35, 188+35]
 
                 }
+                }
 
+                info.onload = function(){
+                    ctx.drawImage(info, canvas.width - 53, 105, 40, 40); 
+                }
+
+                land.onload = function(){
+                    ctx.drawImage(land, 140, 300, 75, 75); 
                 }
 
                    var jx = 0
@@ -77,11 +81,18 @@
                    var joystick = null
                 //joystick settings 
                   function setJoystick(){
-                    scalex = Math.abs(window.innerWidth - 640)
-                    scaley = window.innerHeight - 400
-                    console.log(scalex+ " " + scaley)
+                      if (screen.orientation =='landscape'){
+                        scalex = Math.abs(window.innerHeight - 640)
+                        scaley = window.innerWidth - 400
+                      }
+                      else{
+                        scalex = Math.abs(window.innerWidth - 640)
+                        scaley = window.innerHeight - 400
+                      }
+
                     jx = 487 + scalex/2
-                    jy = 337 + scaley/2
+                    jy = 357 + scaley
+                    console.log(jx + " " + jy)
                     if (manager!=null){
                         manager.destroy()
                     }
@@ -97,8 +108,6 @@
                   setJoystick();
 
                   screen.orientation.onchange = function (){
-                      console.log("change")
-                      console.log(scalex+ " " + scaley)
                       setJoystick();
                    };
                 
