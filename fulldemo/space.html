@@ -71,9 +71,17 @@ var selectAction = (message) => {
     }
 
 
-    else if (data.type == 'button'){
+    else{
+      if (data.data == 'land'){
+        console.log(data.data)
+      }
+      else if(data.data =='info'){
+        console.log(data.data)
+      }
+      else{
       console.log(data.data)
       changeSpaceship(data.data)
+      }
     }
 
 

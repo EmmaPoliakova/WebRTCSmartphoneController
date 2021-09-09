@@ -26,7 +26,7 @@
         
     </head>
     <body>
-
+            <button id="screenButton" onclick="switchScreen()" style = "background: rgb(66, 64, 64); padding:2px; margin:2px; border: none;">  <img id="screenPic" src="img/open.png"  width="25" height="25"> </button></div>
             <div id="zone_joystick"></div>
 
             <canvas id = "canvas" width = "640px" height = "400"></canvas>
@@ -40,14 +40,24 @@
                 var background = new Image();
                 background.src = "./img/spaceship-600x360.jpg";
 
+                var info = new Image();
+                info.src = "./img/info.jpg";
+
+                var land = new Image();
+                land.src = "./img/location.jpg";
+
                 var scalex = Math.abs(window.innerWidth - 640)
                 var scaley = window.innerHeight - 400
 
                 var colors = ["#1c8fc2", "#d3332b", "#51a8ac", "#98cc66", "#ffe36e","#9b6dc6"]
-                var buttons = {188: {'size': 35, 1:[], 2:[], 3:[], 4:[], 5:[], 6:[]}, 300:{'size': 75, 'land': [140, 300, 215, 375]}}
+                var buttons = {188: {'size': 35, 1:[], 2:[], 3:[], 4:[], 5:[], 6:[]}, 300:{'size': 75, 'land': [140, 300, 215, 375]}, 105:{'size':40, 'info':[canvas.width - 53, 105, canvas.width - 13, 145]}}
 
                 background.onload = function(){
                     ctx.drawImage(background, 0,0, canvas.width, canvas.height );  
+
+                    ctx.drawImage(land, 140, 300, 75, 75); 
+
+                    ctx.drawImage(info, canvas.width - 53, 105, 40, 40); 
 
                     for (i = 0; i<6; i++){
                     ctx.fillStyle = colors[i];
@@ -58,27 +68,41 @@
                     buttons[188][i+1] = [154 + i*65, 188, 154 + i*65+35, 188+35]
 
                 }
-                    ctx.beginPath();
-                    ctx.rect(140, 300, 75, 75);
-                    ctx.stroke();
-                    ctx.rect(450, 300, 75, 75);
-                    ctx.stroke();
 
                 }
 
-                
-                  //joystick settings 
-                  var jx = 487 + scalex/2
-                  var jy = 337 + scaley/2
-                  var manager = nipplejs.create({
-                    zone: document.getElementById('zone_joystick'),
-                    mode: 'static',
-                    position: {left: jx + "px", top: jy + "px"},
-                    color: 'blue',
-                    size: 85
-                });
+                   var jx = 0
+                   var jy = 0
+                   var manager = null 
+                   var joystick = null
+                //joystick settings 
+                  function setJoystick(){
+                    scalex = Math.abs(window.innerWidth - 640)
+                    scaley = window.innerHeight - 400
+                    console.log(scalex+ " " + scaley)
+                    jx = 487 + scalex/2
+                    jy = 337 + scaley/2
+                    if (manager!=null){
+                        manager.destroy()
+                    }
+                    manager = nipplejs.create({
+                        zone: document.getElementById('zone_joystick'),
+                        mode: 'static',
+                        position: {left: jx + "px", top: jy + "px"},
+                        color: 'blue',
+                        size: 85
+                    });
+                    joystick = manager.get(manager.id);
+                  }
+                  setJoystick();
 
-                var joystick = manager.get(manager.id);
+                  screen.orientation.onchange = function (){
+                      console.log("change")
+                      console.log(scalex+ " " + scaley)
+                      setJoystick();
+                   };
+                
+
 
                 joystick.on("start", function (evt, data) {
                     conn.send({type: 'joystick', data: {type:'start', degrees: null}})
@@ -90,7 +114,49 @@
                     conn.send({type: 'joystick', data: {type:'end', degrees: null}})
                 })
 
+                /* Get the documentElement (<html>) to display the page in fullscreen */
+                var elem = document.documentElement;
 
+                /* View in fullscreen */
+                function openFullscreen() {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) { /* Safari */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.msRequestFullscreen();
+                }
+                }
+
+                /* Close fullscreen */
+                function closeFullscreen() {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) { /* Safari */
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { /* IE11 */
+                    document.msExitFullscreen();
+                }
+                }
+
+                var img_array= new Array('img/open.png','img/close.png');
+                var full_screen = false;
+                function switchScreen()
+                {
+                    if (full_screen){
+                        document.getElementById("screenPic").src=img_array[0];
+                        closeFullscreen();
+                        full_screen = false;
+                    }
+                    else{
+                        document.getElementById("screenPic").src=img_array[1];
+                        openFullscreen();
+                        full_screen = true;
+
+                    }
+                    setJoystick();
+                    
+                }
                 
                 function start_handler(ev) {
                     
