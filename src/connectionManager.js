@@ -6,11 +6,7 @@ var stats = new Stats();
 stats.showPanel(0);
 
 function managerInitialize(url, qrDomElement, displayDomElement) {
-  peer = new Peer({
-    secure: true,
-    host: "smartcontrollerserver.herokuapp.com", // change here the herokuapp name
-    port: 443,
-  });
+  peer = new Peer();
 
   peer.on("open", function (id) {
     console.log("My peer ID is: " + id);
