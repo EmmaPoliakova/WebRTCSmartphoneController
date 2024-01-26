@@ -12,11 +12,7 @@ const connectToId = urlParams.get("id");
 
 function peerInitialize() {
   // Create own peer object with connection to shared PeerJS server
-  peer = new Peer({
-    secure: true,
-    host: "smartcontrollerserver.herokuapp.com", // change here the herokuapp name
-    port: 443,
-  });
+  peer = new Peer();
 
   peer.on("open", function (id) {
     // Workaround for peer.reconnect deleting previous id
